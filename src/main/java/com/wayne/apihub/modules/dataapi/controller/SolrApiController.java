@@ -1,12 +1,12 @@
 /**
  * Copyright 2021 Wayne
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,9 @@ package com.wayne.apihub.modules.dataapi.controller;
 
 import com.wayne.apihub.model.BasePageRequest;
 import com.wayne.apihub.model.BaseResponse;
+import com.wayne.apihub.modules.dataapi.conf.SolrApiConf;
 import com.wayne.apihub.modules.dataapi.exception.DataApiException;
 import com.wayne.apihub.modules.dataapi.factory.SolrApiHandlerFactory;
-import com.wayne.apihub.modules.dataapi.info.SolrApiConf;
 import com.wayne.apihub.service.DataApiConfService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

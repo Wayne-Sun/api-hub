@@ -1,12 +1,12 @@
 /**
  * Copyright 2021 Wayne
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ import com.wayne.apihub.dao.DataApiHbaseDao;
 import com.wayne.apihub.dao.DataApiMysqlDao;
 import com.wayne.apihub.dao.DataApiSolrDao;
 import com.wayne.apihub.model.BaseResponse;
-import com.wayne.apihub.modules.dataapi.info.HbaseApiConf;
-import com.wayne.apihub.modules.dataapi.info.MysqlApiConf;
-import com.wayne.apihub.modules.dataapi.info.SolrApiConf;
+import com.wayne.apihub.modules.dataapi.conf.HbaseApiConf;
+import com.wayne.apihub.modules.dataapi.conf.MysqlApiConf;
+import com.wayne.apihub.modules.dataapi.conf.SolrApiConf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

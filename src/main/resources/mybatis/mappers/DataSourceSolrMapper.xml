@@ -16,14 +16,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceSolrDao">
-    <resultMap id="solrSourceInfoMap" type="com.wayne.apihub.modules.datasource.info.SolrSourceConf">
+    <resultMap id="solrSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.SolrSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
         <result column="zk_hosts" property="zkHosts"/>
         <result column="zk_chroots" property="zkChroot"/>
     </resultMap>
-    <insert id="insertSolrSource" parameterType="com.wayne.apihub.modules.datasource.info.SolrSourceConf"
+    <insert id="insertSolrSource" parameterType="com.wayne.apihub.modules.datasource.conf.SolrSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_solr (name,comments,zk_hosts,zk_chroots) VALUES
         (#{solrSourceInfo.name,jdbcType=VARCHAR},#{solrSourceInfo.comments,jdbcType=VARCHAR},

@@ -16,14 +16,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceHbaseDao">
-    <resultMap id="hbaseSourceInfoMap" type="com.wayne.apihub.modules.datasource.info.HbaseSourceConf">
+    <resultMap id="hbaseSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.HbaseSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
         <result column="hbase_site_path" property="hbaseSitePath"/>
         <result column="core_site_path" property="coreSitePath"/>
     </resultMap>
-    <insert id="insertHbaseSource" parameterType="com.wayne.apihub.modules.datasource.info.HbaseSourceConf"
+    <insert id="insertHbaseSource" parameterType="com.wayne.apihub.modules.datasource.conf.HbaseSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_hbase (name,comments,hbase_site_path,core_site_path) VALUES
         (#{hbaseSourceInfo.name,jdbcType=VARCHAR},#{hbaseSourceInfo.comments,jdbcType=VARCHAR},

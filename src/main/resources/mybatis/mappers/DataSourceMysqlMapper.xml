@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceMysqlDao">
-    <resultMap id="mysqlSourceInfoMap" type="com.wayne.apihub.modules.datasource.info.MysqlSourceConf">
+    <resultMap id="mysqlSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.MysqlSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
@@ -24,7 +24,7 @@ limitations under the License.
         <result column="username" property="username"/>
         <result column="password" property="password"/>
     </resultMap>
-    <insert id="insertMysqlSource" parameterType="com.wayne.apihub.modules.datasource.info.MysqlSourceConf"
+    <insert id="insertMysqlSource" parameterType="com.wayne.apihub.modules.datasource.conf.MysqlSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_mysql (name,comments,url,username,password) VALUES
         (#{mysqlSourceInfo.name,jdbcType=VARCHAR},#{mysqlSourceInfo.comments,jdbcType=VARCHAR},

@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataApiSolrDao">
-    <resultMap id="solrApiInfoMap" type="com.wayne.apihub.modules.dataapi.info.SolrApiConf">
+    <resultMap id="solrApiInfoMap" type="com.wayne.apihub.modules.dataapi.conf.SolrApiConf">
         <id column="id" property="id"/>
         <result column="data_source_id" property="dataSourceId"/>
         <result column="name" property="name"/>
@@ -31,7 +31,7 @@ limitations under the License.
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
         <result column="update_by" property="updateBy"/>
     </resultMap>
-    <insert id="insertSolrApi" parameterType="com.wayne.apihub.modules.dataapi.info.SolrApiConf"
+    <insert id="insertSolrApi" parameterType="com.wayne.apihub.modules.dataapi.conf.SolrApiConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_api_solr
         (data_source_id,name,comments,collection,fields,conditions,orders,status,create_time,create_by)
