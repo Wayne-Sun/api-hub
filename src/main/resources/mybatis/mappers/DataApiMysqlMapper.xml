@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Copyright 2021 Wayne
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<mapper namespace="com.wayne.apihub.dao.DataApiMysqlDao">
+    <resultMap id="mysqlApiInfoMap" type="com.wayne.apihub.modules.dataapi.info.MysqlApiConf">
+        <id column="id" property="id"/>
+        <result column="data_source_id" property="dataSourceId"/>
+        <result column="name" property="name"/>
+        <result column="comments" property="comments"/>
+        <result column="database_name" property="databaseName"/>
+        <result column="table_name" property="tableName"/>
+        <result column="columns" property="columns"/>
+        <result column="conditions" property="conditions"/>
+        <result column="condition_types" property="conditionTypes"/>
+        <result column="orders" property="orders"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+    <insert id="insertMysqlApi" parameterType="com.wayne.apihub.modules.dataapi.info.MysqlApiConf"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO api_hub.data_api_mysql
+        (data_source_id,name,comments,database_name,table_name,columns,conditions,condition_types,orders,status,create_time,create_by)
+        VALUES
+        (#{mysqlApiInfo.dataSourceId,jdbcType=NUMERIC},#{mysqlApiInfo.name,jdbcType=VARCHAR},#{mysqlApiInfo.comments,jdbcType=VARCHAR},
+        #{mysqlApiInfo.databaseName,jdbcType=VARCHAR},#{mysqlApiInfo.tableName,jdbcType=VARCHAR},#{mysqlApiInfo.columns,jdbcType=VARCHAR},
+        #{mysqlApiInfo.conditions,jdbcType=VARCHAR},#{mysqlApiInfo.conditionTypes,jdbcType=VARCHAR},#{mysqlApiInfo.orders,jdbcType=VARCHAR},
+        #{mysqlApiInfo.status,jdbcType=NUMERIC},#{mysqlApiInfo.createTime,jdbcType=TIMESTAMP},#{mysqlApiInfo.createBy,jdbcType=VARCHAR})
+    </insert>
+    <select id="listMysqlApi" resultMap="mysqlApiInfoMap">
+        SELECT id,name,comments,database_name,table_name,columns,conditions,condition_types,orders FROM
+        api_hub.data_api_mysql ORDER BY id ASC
+    </select>
+    <select id="getMysqlApiById" resultMap="mysqlApiInfoMap" parameterType="java.lang.Long">
+        SELECT id,name,comments,database_name,table_name,columns,conditions,condition_types,orders FROM
+        api_hub.data_api_mysql WHERE id = #{id}
+    </select>
+    <update id="updateMysqlApiStatus">
+        UPDATE api_hub.data_api_mysql
+        <set>
+            status = #{status}
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+            update_by = #{updateBy}
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="countMysqlApiBySourceId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT COUNT(1) FROM api_hub.data_api_mysql WHERE data_source_id = #{sourceId} AND status = 1
+    </select>
+</mapper>

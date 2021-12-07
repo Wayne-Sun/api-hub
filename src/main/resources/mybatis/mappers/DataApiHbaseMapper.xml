@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Copyright 2021 Wayne
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<mapper namespace="com.wayne.apihub.dao.DataApiHbaseDao">
+    <resultMap id="hbaseApiInfoMap" type="com.wayne.apihub.modules.dataapi.info.HbaseApiConf">
+        <id column="id" property="id"/>
+        <result column="data_source_id" property="dataSourceId"/>
+        <result column="name" property="name"/>
+        <result column="comments" property="comments"/>
+        <result column="type" property="type"/>
+        <result column="table_name" property="tableName"/>
+        <result column="columns" property="columns"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+    <insert id="insertHbaseApi" parameterType="com.wayne.apihub.modules.dataapi.info.HbaseApiConf"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO api_hub.data_api_hbase
+        (data_source_id,name,comments,type,table_name,columns,status,create_time,create_by)
+        VALUES
+        (#{hbaseApiConf.dataSourceId,jdbcType=NUMERIC},#{hbaseApiConf.name,jdbcType=VARCHAR},#{hbaseApiConf.comments,jdbcType=VARCHAR},
+        #{hbaseApiConf.type,jdbcType=NUMERIC},#{hbaseApiConf.tableName,jdbcType=VARCHAR},#{hbaseApiConf.columns,jdbcType=VARCHAR},
+        #{hbaseApiConf.status,jdbcType=NUMERIC},#{hbaseApiConf.createTime,jdbcType=TIMESTAMP},#{hbaseApiConf.createBy,jdbcType=VARCHAR})
+    </insert>
+    <select id="listHbaseApi" resultMap="hbaseApiInfoMap">
+        SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase ORDER BY id ASC
+    </select>
+    <select id="getHbaseApiById" resultMap="hbaseApiInfoMap" parameterType="java.lang.Long">
+        SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase WHERE id = #{id}
+    </select>
+    <update id="updateHbaseApiStatus">
+        UPDATE api_hub.data_api_hbase
+        <set>
+            status = #{status}
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+            update_by = #{updateBy}
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="countHbaseApiBySourceId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT COUNT(1) FROM api_hub.data_api_hbase WHERE data_source_id = #{sourceId} AND status = 1
+    </select>
+</mapper>

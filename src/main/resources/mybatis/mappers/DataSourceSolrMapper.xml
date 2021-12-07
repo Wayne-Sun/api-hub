@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Copyright 2021 Wayne
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<mapper namespace="com.wayne.apihub.dao.DataSourceSolrDao">
+    <resultMap id="solrSourceInfoMap" type="com.wayne.apihub.modules.datasource.info.SolrSourceConf">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="comments" property="comments"/>
+        <result column="zk_hosts" property="zkHosts"/>
+        <result column="zk_chroots" property="zkChroot"/>
+    </resultMap>
+    <insert id="insertSolrSource" parameterType="com.wayne.apihub.modules.datasource.info.SolrSourceConf"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO api_hub.data_source_solr (name,comments,zk_hosts,zk_chroots) VALUES
+        (#{solrSourceInfo.name,jdbcType=VARCHAR},#{solrSourceInfo.comments,jdbcType=VARCHAR},
+        #{solrSourceInfo.zkHosts,jdbcType=VARCHAR},#{solrSourceInfo.zkChroot,jdbcType=VARCHAR})
+    </insert>
+    <select id="listSolrSource" resultMap="solrSourceInfoMap">
+        SELECT id,name,comments,zk_hosts,zk_chroots FROM api_hub.data_source_solr ORDER BY id ASC
+    </select>
+    <select id="getSolrSourceById" resultMap="solrSourceInfoMap" parameterType="java.lang.Long">
+        SELECT id,name,comments,zk_hosts,zk_chroots FROM api_hub.data_source_solr WHERE id = #{id}
+    </select>
+    <update id="updateSolrSourceStatus">
+        UPDATE api_hub.data_source_solr
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

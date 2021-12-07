@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Copyright 2021 Wayne
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<mapper namespace="com.wayne.apihub.dao.DataSourceMysqlDao">
+    <resultMap id="mysqlSourceInfoMap" type="com.wayne.apihub.modules.datasource.info.MysqlSourceConf">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="comments" property="comments"/>
+        <result column="url" property="url"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+    </resultMap>
+    <insert id="insertMysqlSource" parameterType="com.wayne.apihub.modules.datasource.info.MysqlSourceConf"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO api_hub.data_source_mysql (name,comments,url,username,password) VALUES
+        (#{mysqlSourceInfo.name,jdbcType=VARCHAR},#{mysqlSourceInfo.comments,jdbcType=VARCHAR},
+        #{mysqlSourceInfo.url,jdbcType=VARCHAR},#{mysqlSourceInfo.username,jdbcType=VARCHAR},#{mysqlSourceInfo.password,jdbcType=VARCHAR})
+    </insert>
+    <select id="listMysqlSource" resultMap="mysqlSourceInfoMap">
+        SELECT id,name,comments,url,username,password FROM api_hub.data_source_mysql ORDER BY id ASC
+    </select>
+    <select id="getMysqlSourceById" resultMap="mysqlSourceInfoMap" parameterType="java.lang.Long">
+        SELECT id,name,comments,url,username,password FROM api_hub.data_source_mysql WHERE id = #{id}
+    </select>
+    <update id="updateMysqlSourceStatus">
+        UPDATE api_hub.data_source_mysql
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>
