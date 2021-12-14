@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceMysqlDao">
-    <resultMap id="mysqlSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.MysqlSourceConf">
+    <resultMap id="mysqlSourceConfMap" type="com.wayne.apihub.modules.datasource.conf.MysqlSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
@@ -27,13 +27,13 @@ limitations under the License.
     <insert id="insertMysqlSource" parameterType="com.wayne.apihub.modules.datasource.conf.MysqlSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_mysql (name,comments,url,username,password) VALUES
-        (#{mysqlSourceInfo.name,jdbcType=VARCHAR},#{mysqlSourceInfo.comments,jdbcType=VARCHAR},
-        #{mysqlSourceInfo.url,jdbcType=VARCHAR},#{mysqlSourceInfo.username,jdbcType=VARCHAR},#{mysqlSourceInfo.password,jdbcType=VARCHAR})
+        (#{mysqlSourceConf.name,jdbcType=VARCHAR},#{mysqlSourceConf.comments,jdbcType=VARCHAR},
+        #{mysqlSourceConf.url,jdbcType=VARCHAR},#{mysqlSourceConf.username,jdbcType=VARCHAR},#{mysqlSourceConf.password,jdbcType=VARCHAR})
     </insert>
-    <select id="listMysqlSource" resultMap="mysqlSourceInfoMap">
+    <select id="listMysqlSource" resultMap="mysqlSourceConfMap">
         SELECT id,name,comments,url,username,password FROM api_hub.data_source_mysql ORDER BY id ASC
     </select>
-    <select id="getMysqlSourceById" resultMap="mysqlSourceInfoMap" parameterType="java.lang.Long">
+    <select id="getMysqlSourceById" resultMap="mysqlSourceConfMap" parameterType="java.lang.Long">
         SELECT id,name,comments,url,username,password FROM api_hub.data_source_mysql WHERE id = #{id}
     </select>
     <update id="updateMysqlSourceStatus">

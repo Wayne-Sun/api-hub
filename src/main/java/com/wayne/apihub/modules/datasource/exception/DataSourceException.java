@@ -19,9 +19,9 @@ package com.wayne.apihub.modules.datasource.exception;
  * @author Wayne
  */
 public class DataSourceException extends Exception {
-    private static final String ALREADY_ENABLED = "数据源已启用，无需操作";
-    private static final String ALREADY_DISABLED = "数据源已停用，无需操作";
-    private static final String API_NOT_DISABLED = "数据源存在API未禁用，请检查";
+    private static final String ALREADY_ENABLED = "Data source already enabled";
+    private static final String ALREADY_DISABLED = "Data source already disabled";
+    private static final String API_NOT_DISABLED = "Please disable all APIs of this data source";
 
     public DataSourceException(String message) {
         super(message);

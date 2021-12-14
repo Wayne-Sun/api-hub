@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataApiSolrDao {
     /**
-     * insert Solr API info
+     * insert Solr API configuration
      *
-     * @param solrApiInfo SolrApiInfo
+     * @param solrApiConf SolrApiConf
      */
-    void insertSolrApi(@Param("solrApiInfo") SolrApiConf solrApiInfo);
+    void insertSolrApi(@Param("solrApiInfo") SolrApiConf solrApiConf);
 
     /**
-     * list Solr API info
+     * list Solr API configuration
      *
-     * @return SolrApiInfo
+     * @return SolrApiConf
      */
     List<SolrApiConf> listSolrApi();
 
     /**
-     * get Solr API info by id
+     * get Solr API configuration by id
      *
      * @param id id of the API
-     * @return SolrApiInfo
+     * @return SolrApiConf
      */
     SolrApiConf getSolrApiById(@Param("id") Long id);
 

@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.query.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.ToString;
 
@@ -25,8 +24,8 @@ import lombok.ToString;
  */
 @Data
 @ToString
-@ApiModel(value = "API 请求父类", subTypes = {HbaseQueryRequest.class, MysqlQueryRequest.class, SolrQueryRequest.class})
+@Schema(name = "BaseQueryRequest", description = "Base class for API request", subTypes = {HbaseQueryRequest.class, MysqlQueryRequest.class, SolrQueryRequest.class})
 public class BaseQueryRequest {
-    @ApiModelProperty(value = "API ID")
+    @Schema(description = "API ID")
     private Long id;
 }

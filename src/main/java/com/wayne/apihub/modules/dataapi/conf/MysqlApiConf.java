@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.dataapi.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,18 +26,18 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Mysql API 配置信息", parent = BaseApiConf.class)
+@Schema(name = "MysqlApiConf", description = "Mysql API configuration entity")
 public class MysqlApiConf extends BaseApiConf {
-    @ApiModelProperty(value = "Mysql 库名")
+    @Schema(description = "Mysql database")
     private String databaseName;
-    @ApiModelProperty(value = "Mysql 表名")
+    @Schema(description = "Mysql table")
     private String tableName;
-    @ApiModelProperty(value = "Mysql 返回列名称列表")
+    @Schema(description = "Mysql columns")
     private String columns;
-    @ApiModelProperty(value = "Mysql 条件子语句")
+    @Schema(description = "Mysql where clause")
     private String conditions;
-    @ApiModelProperty(value = "Mysql 条件类型列表")
+    @Schema(description = "Mysql where clause field type")
     private String conditionTypes;
-    @ApiModelProperty(value = "Mysql 排序子语句")
+    @Schema(description = "Mysql order clause")
     private String orders;
 }

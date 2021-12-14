@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataApiSolrDao">
-    <resultMap id="solrApiInfoMap" type="com.wayne.apihub.modules.dataapi.conf.SolrApiConf">
+    <resultMap id="solrApiConfMap" type="com.wayne.apihub.modules.dataapi.conf.SolrApiConf">
         <id column="id" property="id"/>
         <result column="data_source_id" property="dataSourceId"/>
         <result column="name" property="name"/>
@@ -36,15 +36,15 @@ limitations under the License.
         INSERT INTO api_hub.data_api_solr
         (data_source_id,name,comments,collection,fields,conditions,orders,status,create_time,create_by)
         VALUES
-        (#{solrApiInfo.dataSourceId,jdbcType=NUMERIC},#{solrApiInfo.name,jdbcType=VARCHAR},#{solrApiInfo.comments,jdbcType=VARCHAR},
-        #{solrApiInfo.collection,jdbcType=VARCHAR},#{solrApiInfo.fields,jdbcType=VARCHAR},#{solrApiInfo.conditions,jdbcType=VARCHAR},
-        #{solrApiInfo.orders,jdbcType=VARCHAR},#{solrApiInfo.status,jdbcType=NUMERIC},#{solrApiInfo.createTime,jdbcType=TIMESTAMP},
-        #{solrApiInfo.createBy,jdbcType=VARCHAR})
+        (#{solrApiConf.dataSourceId,jdbcType=NUMERIC},#{solrApiConf.name,jdbcType=VARCHAR},#{solrApiConf.comments,jdbcType=VARCHAR},
+        #{solrApiConf.collection,jdbcType=VARCHAR},#{solrApiConf.fields,jdbcType=VARCHAR},#{solrApiConf.conditions,jdbcType=VARCHAR},
+        #{solrApiConf.orders,jdbcType=VARCHAR},#{solrApiConf.status,jdbcType=NUMERIC},#{solrApiConf.createTime,jdbcType=TIMESTAMP},
+        #{solrApiConf.createBy,jdbcType=VARCHAR})
     </insert>
-    <select id="listSolrApi" resultMap="solrApiInfoMap">
+    <select id="listSolrApi" resultMap="solrApiConfMap">
         SELECT id,name,comments,collection,fields,conditions,orders FROM api_hub.data_api_solr ORDER BY id ASC
     </select>
-    <select id="getSolrApiById" resultMap="solrApiInfoMap" parameterType="java.lang.Long">
+    <select id="getSolrApiById" resultMap="solrApiConfMap" parameterType="java.lang.Long">
         SELECT id,name,comments,collection,fields,conditions,orders FROM api_hub.data_api_solr WHERE id = #{id}
     </select>
     <update id="updateSolrApiStatus">

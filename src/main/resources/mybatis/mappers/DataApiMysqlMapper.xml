@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataApiMysqlDao">
-    <resultMap id="mysqlApiInfoMap" type="com.wayne.apihub.modules.dataapi.conf.MysqlApiConf">
+    <resultMap id="mysqlApiConfMap" type="com.wayne.apihub.modules.dataapi.conf.MysqlApiConf">
         <id column="id" property="id"/>
         <result column="data_source_id" property="dataSourceId"/>
         <result column="name" property="name"/>
@@ -38,16 +38,16 @@ limitations under the License.
         INSERT INTO api_hub.data_api_mysql
         (data_source_id,name,comments,database_name,table_name,columns,conditions,condition_types,orders,status,create_time,create_by)
         VALUES
-        (#{mysqlApiInfo.dataSourceId,jdbcType=NUMERIC},#{mysqlApiInfo.name,jdbcType=VARCHAR},#{mysqlApiInfo.comments,jdbcType=VARCHAR},
-        #{mysqlApiInfo.databaseName,jdbcType=VARCHAR},#{mysqlApiInfo.tableName,jdbcType=VARCHAR},#{mysqlApiInfo.columns,jdbcType=VARCHAR},
-        #{mysqlApiInfo.conditions,jdbcType=VARCHAR},#{mysqlApiInfo.conditionTypes,jdbcType=VARCHAR},#{mysqlApiInfo.orders,jdbcType=VARCHAR},
-        #{mysqlApiInfo.status,jdbcType=NUMERIC},#{mysqlApiInfo.createTime,jdbcType=TIMESTAMP},#{mysqlApiInfo.createBy,jdbcType=VARCHAR})
+        (#{mysqlApiConf.dataSourceId,jdbcType=NUMERIC},#{mysqlApiConf.name,jdbcType=VARCHAR},#{mysqlApiConf.comments,jdbcType=VARCHAR},
+        #{mysqlApiConf.databaseName,jdbcType=VARCHAR},#{mysqlApiConf.tableName,jdbcType=VARCHAR},#{mysqlApiConf.columns,jdbcType=VARCHAR},
+        #{mysqlApiConf.conditions,jdbcType=VARCHAR},#{mysqlApiConf.conditionTypes,jdbcType=VARCHAR},#{mysqlApiConf.orders,jdbcType=VARCHAR},
+        #{mysqlApiConf.status,jdbcType=NUMERIC},#{mysqlApiConf.createTime,jdbcType=TIMESTAMP},#{mysqlApiConf.createBy,jdbcType=VARCHAR})
     </insert>
-    <select id="listMysqlApi" resultMap="mysqlApiInfoMap">
+    <select id="listMysqlApi" resultMap="mysqlApiConfMap">
         SELECT id,name,comments,database_name,table_name,columns,conditions,condition_types,orders FROM
         api_hub.data_api_mysql ORDER BY id ASC
     </select>
-    <select id="getMysqlApiById" resultMap="mysqlApiInfoMap" parameterType="java.lang.Long">
+    <select id="getMysqlApiById" resultMap="mysqlApiConfMap" parameterType="java.lang.Long">
         SELECT id,name,comments,database_name,table_name,columns,conditions,condition_types,orders FROM
         api_hub.data_api_mysql WHERE id = #{id}
     </select>

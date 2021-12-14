@@ -16,8 +16,9 @@
 package com.wayne.apihub.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.wayne.apihub.modules.dataapi.conf.BaseApiConf;
+import com.wayne.apihub.modules.datasource.conf.BaseSourceConf;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,9 +31,9 @@ import java.util.Date;
 @Data
 @ToString
 @EqualsAndHashCode
-@ApiModel("实体父类")
+@Schema(name = "BaseDataObject", description = "Base class for DB entity", subTypes = {BaseApiConf.class, BaseSourceConf.class})
 public class BaseDataObject {
-    @ApiModelProperty("主键ID")
+    @Schema(description = "Primary Key")
     private Long id;
     @JsonIgnore
     private Integer status;

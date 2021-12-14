@@ -19,21 +19,18 @@ import com.wayne.apihub.model.BaseResponse;
 import com.wayne.apihub.modules.query.exception.QueryParamException;
 import com.wayne.apihub.modules.query.handler.MysqlQueryHandler;
 import com.wayne.apihub.modules.query.request.MysqlQueryRequest;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 
 /**
  * @author Wayne
  */
-@Api(tags = {"Mysql API 查询处理"})
+@Tag(name = "MysqlQueryController", description = "Mysql API Query Handler")
 @Slf4j
 @RestController
 @RequestMapping("/v1/query")
@@ -45,9 +42,9 @@ public class MysqlQueryController {
         this.mysqlQueryHandler = mysqlQueryHandler;
     }
 
-    @ApiOperation(value = "Mysql API 查询", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Mysql API query", method = "POST")
     @PostMapping("/mysql")
-    public BaseResponse query(@RequestBody MysqlQueryRequest mysqlQueryRequest) {
+    public BaseResponse query(@ModelAttribute @RequestBody MysqlQueryRequest mysqlQueryRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = mysqlQueryHandler.handle(mysqlQueryRequest);

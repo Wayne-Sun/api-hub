@@ -32,14 +32,14 @@ public interface CommonApiHandlerFactory {
     /**
      * register an API
      *
-     * @param baseApiConf api info
+     * @param baseApiConf api configuration
      */
     void registerApi(BaseApiConf baseApiConf);
 
     /**
      * initialize an API
      *
-     * @param baseApiConf api info
+     * @param baseApiConf api configuration
      */
     void initApi(BaseApiConf baseApiConf);
 

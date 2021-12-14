@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataSourceHbaseDao {
     /**
-     * insert hbase source info
+     * insert hbase source configuration
      *
-     * @param hbaseSourceInfo HbaseSourceInfo
+     * @param hbaseSourceConf HbaseSourceConf
      */
-    void insertHbaseSource(@Param("hbaseSourceInfo") HbaseSourceConf hbaseSourceInfo);
+    void insertHbaseSource(@Param("hbaseSourceConf") HbaseSourceConf hbaseSourceConf);
 
     /**
-     * list hbase source info
+     * list hbase source configuration
      *
-     * @return HbaseSourceInfo
+     * @return HbaseSourceConf
      */
     List<HbaseSourceConf> listHbaseSource();
 
     /**
-     * get hbase source info by id
+     * get hbase source configuration by id
      *
      * @param id id of hbase source
-     * @return HbaseSourceInfo
+     * @return HbaseSourceConf
      */
     HbaseSourceConf getHbaseSourceById(@Param("id") Long id);
 

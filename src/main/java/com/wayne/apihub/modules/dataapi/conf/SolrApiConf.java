@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.dataapi.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,14 +26,14 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Solr API 配置信息", parent = BaseApiConf.class)
+@Schema(name = "SolrApiConf", description = "Solr API configuration entity")
 public class SolrApiConf extends BaseApiConf {
-    @ApiModelProperty(value = "Solr 集合名")
+    @Schema(description = "Solr collection")
     private String collection;
-    @ApiModelProperty(value = "Solr 返回字段列表")
+    @Schema(description = "Solr fields")
     private String fields;
-    @ApiModelProperty(value = "Solr 查询子语句")
+    @Schema(description = "Solr where clause")
     private String conditions;
-    @ApiModelProperty(value = "Solr 排序子语句")
+    @Schema(description = "Solr order clause")
     private String orders;
 }

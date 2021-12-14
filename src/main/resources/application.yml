@@ -27,7 +27,14 @@ spring:
 logging:
   config: classpath:log4j2.xml
   level:
-    com.wayne.springboot.demo: debug
+    com.wayne.apihub: debug
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mybatis/mappers/*.xml
+springdoc:
+  api-docs:
+    path: /openapi
+  packages-to-scan:
+    - com.wayne.apihub.modules
+    - com.wayne.apihub.model
+  paths-to-match: /v1/**

@@ -19,9 +19,9 @@ package com.wayne.apihub.modules.query.exception;
  * @author Wayne
  */
 public class QueryParamException extends Exception {
-    private static final String PARAM_NUM_MESSAGE = "输入参数与配置参数数量不匹配";
-    private static final String API_NOT_EXISTS = "请求接口不存在或已禁用";
-    private static final String SRC_NOT_EXISTS = "请求数据源不存在或已禁用";
+    private static final String PARAM_NUM_MESSAGE = "Wrong parameter number";
+    private static final String API_NOT_EXISTS = "API not exists or disabled";
+    private static final String SRC_NOT_EXISTS = "Data source not exists or disabled";
 
     public QueryParamException(String message) {
         super(message);

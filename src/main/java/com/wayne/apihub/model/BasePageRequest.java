@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 /**
@@ -26,12 +25,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@ApiModel("分页请求父类")
+@Schema(name = "BasePageRequest", description = "Base class for paging request")
 public class BasePageRequest {
     @NonNull
-    @ApiModelProperty("页码号")
+    @Schema(description = "Page number")
     private Integer pageNum;
     @NonNull
-    @ApiModelProperty("单页数据量")
+    @Schema(description = "Page size")
     private Integer pageSize;
 }

@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataApiHbaseDao">
-    <resultMap id="hbaseApiInfoMap" type="com.wayne.apihub.modules.dataapi.conf.HbaseApiConf">
+    <resultMap id="HbaseApiConfMap" type="com.wayne.apihub.modules.dataapi.conf.HbaseApiConf">
         <id column="id" property="id"/>
         <result column="data_source_id" property="dataSourceId"/>
         <result column="name" property="name"/>
@@ -39,10 +39,10 @@ limitations under the License.
         #{hbaseApiConf.type,jdbcType=NUMERIC},#{hbaseApiConf.tableName,jdbcType=VARCHAR},#{hbaseApiConf.columns,jdbcType=VARCHAR},
         #{hbaseApiConf.status,jdbcType=NUMERIC},#{hbaseApiConf.createTime,jdbcType=TIMESTAMP},#{hbaseApiConf.createBy,jdbcType=VARCHAR})
     </insert>
-    <select id="listHbaseApi" resultMap="hbaseApiInfoMap">
+    <select id="listHbaseApi" resultMap="HbaseApiConfMap">
         SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase ORDER BY id ASC
     </select>
-    <select id="getHbaseApiById" resultMap="hbaseApiInfoMap" parameterType="java.lang.Long">
+    <select id="getHbaseApiById" resultMap="HbaseApiConfMap" parameterType="java.lang.Long">
         SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase WHERE id = #{id}
     </select>
     <update id="updateHbaseApiStatus">

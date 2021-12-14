@@ -22,9 +22,9 @@ import com.wayne.apihub.modules.datasource.conf.SolrSourceConf;
 import com.wayne.apihub.modules.datasource.exception.DataSourceException;
 import com.wayne.apihub.modules.datasource.factory.SolrClientFactory;
 import com.wayne.apihub.service.DataSourceConfService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Wayne
  */
-@Api(tags = {"Solr 数据源管理"})
+@Tag(name = "SolrSourceController", description = "Solr Data Source Management")
 @Slf4j
 @RestController
 @RequestMapping("/v1/source/solr")
@@ -46,9 +46,9 @@ public class SolrSourceController {
         this.solrClientFactory = solrClientFactory;
     }
 
-    @ApiOperation(value = "创建 Solr 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Register Solr data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@RequestBody SolrSourceConf solrSourceInfo) {
+    public BaseResponse insertSource(@ModelAttribute @RequestBody SolrSourceConf solrSourceInfo) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertSolrSourceConf(solrSourceInfo);
@@ -60,9 +60,9 @@ public class SolrSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "分页获取 Solr 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "List Solr data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listSolrSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -74,9 +74,9 @@ public class SolrSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "初始化 Solr 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Initialize Solr data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse initSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             solrClientFactory.initClient(hbaseSourceInfo);
@@ -89,9 +89,9 @@ public class SolrSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "启用 Solr 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Enable Solr data source", method = "GET")
     @GetMapping("/enableSource")
-    public BaseResponse enableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse enableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             solrClientFactory.enableClient(id);
@@ -107,9 +107,9 @@ public class SolrSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "禁用 Solr 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Disable Solr data source", method = "GET")
     @GetMapping("/disableSource")
-    public BaseResponse disableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse disableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             solrClientFactory.disableClient(id);

@@ -19,8 +19,8 @@ package com.wayne.apihub.modules.dataapi.exception;
  * @author Wayne
  */
 public class DataApiException extends Exception {
-    private static final String ALREADY_ENABLED = "API 已启用，无需操作";
-    private static final String ALREADY_DISABLED = "API 已停用，无需操作";
+    private static final String ALREADY_ENABLED = "API already enabled";
+    private static final String ALREADY_DISABLED = "API already disabled";
 
     public DataApiException(String message) {
         super(message);

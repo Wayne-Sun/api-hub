@@ -16,8 +16,7 @@
 package com.wayne.apihub.modules.datasource.conf;
 
 import com.wayne.apihub.model.BaseDataObject;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,10 +27,10 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "数据源父类", subTypes = {HbaseSourceConf.class, MysqlSourceConf.class, SolrSourceConf.class}, parent = BaseDataObject.class)
+@Schema(name = "BaseSourceConf", description = "Base class for data source", subTypes = {HbaseSourceConf.class, MysqlSourceConf.class, SolrSourceConf.class})
 public class BaseSourceConf extends BaseDataObject {
-    @ApiModelProperty(value = "数据源名称")
+    @Schema(description = "data source name")
     private String name;
-    @ApiModelProperty(value = "数据源描述")
+    @Schema(description = "data source description")
     private String comments;
 }

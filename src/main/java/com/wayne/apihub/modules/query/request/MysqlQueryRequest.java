@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.query.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -29,12 +28,12 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Mysql API 请求", parent = BaseQueryRequest.class)
+@Schema(name = "MysqlQueryRequest", description = "Mysql API request")
 public class MysqlQueryRequest extends BaseQueryRequest {
-    @ApiModelProperty(value = "请求参数")
+    @Schema(description = "Request parameters")
     private List<String> params;
-    @ApiModelProperty(value = "分页页码")
+    @Schema(description = "Page number")
     private Integer pageNum;
-    @ApiModelProperty(value = "分页单页大小")
+    @Schema(description = "Page size")
     private Integer pageSize;
 }

@@ -16,8 +16,7 @@
 package com.wayne.apihub.modules.dataapi.conf;
 
 import com.wayne.apihub.model.BaseDataObject;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,12 +27,12 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "API 信息父类", subTypes = {HbaseApiConf.class, MysqlApiConf.class, SolrApiConf.class}, parent = BaseDataObject.class)
+@Schema(name = "BaseApiConf", description = "Base class for API configuration", subTypes = {HbaseApiConf.class, MysqlApiConf.class, SolrApiConf.class})
 public class BaseApiConf extends BaseDataObject {
-    @ApiModelProperty(value = "API 数据源ID")
+    @Schema(description = "API data source id")
     private Long dataSourceId;
-    @ApiModelProperty(value = "API 名称")
+    @Schema(description = "API name")
     private String name;
-    @ApiModelProperty(value = "API 描述")
+    @Schema(description = "API description")
     private String comments;
 }

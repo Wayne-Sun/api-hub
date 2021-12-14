@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.datasource.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,10 +26,10 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Hbase 数据源 配置信息", parent = BaseSourceConf.class)
+@Schema(name = "HbaseSourceConf", description = "Hbase data source configuration entity")
 public class HbaseSourceConf extends BaseSourceConf {
-    @ApiModelProperty(value = "hbase-site.xml 存储路径")
+    @Schema(description = "hbase-site.xml local path")
     private String hbaseSitePath;
-    @ApiModelProperty(value = "core-site.xml 存储路径")
+    @Schema(description = "core-site.xml local path")
     private String coreSitePath;
 }

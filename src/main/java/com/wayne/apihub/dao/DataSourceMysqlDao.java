@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataSourceMysqlDao {
     /**
-     * insert mysql source info
+     * insert mysql source configuration
      *
-     * @param mysqlSourceInfo MysqlSourceInfo
+     * @param mysqlSourceConf MysqlSourceConf
      */
-    void insertMysqlSource(@Param("mysqlSourceInfo") MysqlSourceConf mysqlSourceInfo);
+    void insertMysqlSource(@Param("mysqlSourceConf") MysqlSourceConf mysqlSourceConf);
 
     /**
-     * list mysql source info
+     * list mysql source configuration
      *
-     * @return MysqlSourceInfo
+     * @return MysqlSourceConf
      */
     List<MysqlSourceConf> listMysqlSource();
 
     /**
-     * get mysql source info by id
+     * get mysql source configuration by id
      *
      * @param id id of mysql source
-     * @return MysqlSourceInfo
+     * @return MysqlSourceConf
      */
     MysqlSourceConf getMysqlSourceById(@Param("id") Long id);
 

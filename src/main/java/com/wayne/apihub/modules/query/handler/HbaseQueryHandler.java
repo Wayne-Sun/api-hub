@@ -71,7 +71,7 @@ public class HbaseQueryHandler {
                 baseResponse = handleScan(hbaseApiHandler, hbaseClient, hbaseQueryRequest);
                 break;
             default:
-                baseResponse = BaseResponse.bad("Hbase请求类型注册错误");
+                baseResponse = BaseResponse.bad("Wrong Hbase API type");
                 break;
         }
         return baseResponse;

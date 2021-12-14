@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.datasource.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,12 +26,12 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Mysql 数据源 配置信息", parent = BaseSourceConf.class)
+@Schema(name = "MysqlSourceConf", description = "Mysql data source configuration entity")
 public class MysqlSourceConf extends BaseSourceConf {
-    @ApiModelProperty(value = "Mysql 连接 url")
+    @Schema(description = "Mysql jdbc url")
     private String url;
-    @ApiModelProperty(value = "Mysql 连接用户名")
+    @Schema(description = "Mysql user name")
     private String username;
-    @ApiModelProperty(value = "Mysql 连接密码")
+    @Schema(description = "Mysql password")
     private String password;
 }

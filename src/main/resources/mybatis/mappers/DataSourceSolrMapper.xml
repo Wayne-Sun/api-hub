@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceSolrDao">
-    <resultMap id="solrSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.SolrSourceConf">
+    <resultMap id="solrSourceConfMap" type="com.wayne.apihub.modules.datasource.conf.SolrSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
@@ -26,13 +26,13 @@ limitations under the License.
     <insert id="insertSolrSource" parameterType="com.wayne.apihub.modules.datasource.conf.SolrSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_solr (name,comments,zk_hosts,zk_chroots) VALUES
-        (#{solrSourceInfo.name,jdbcType=VARCHAR},#{solrSourceInfo.comments,jdbcType=VARCHAR},
-        #{solrSourceInfo.zkHosts,jdbcType=VARCHAR},#{solrSourceInfo.zkChroot,jdbcType=VARCHAR})
+        (#{solrSourceConf.name,jdbcType=VARCHAR},#{solrSourceConf.comments,jdbcType=VARCHAR},
+        #{solrSourceConf.zkHosts,jdbcType=VARCHAR},#{solrSourceConf.zkChroot,jdbcType=VARCHAR})
     </insert>
-    <select id="listSolrSource" resultMap="solrSourceInfoMap">
+    <select id="listSolrSource" resultMap="solrSourceConfMap">
         SELECT id,name,comments,zk_hosts,zk_chroots FROM api_hub.data_source_solr ORDER BY id ASC
     </select>
-    <select id="getSolrSourceById" resultMap="solrSourceInfoMap" parameterType="java.lang.Long">
+    <select id="getSolrSourceById" resultMap="solrSourceConfMap" parameterType="java.lang.Long">
         SELECT id,name,comments,zk_hosts,zk_chroots FROM api_hub.data_source_solr WHERE id = #{id}
     </select>
     <update id="updateSolrSourceStatus">

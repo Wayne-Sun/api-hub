@@ -21,9 +21,9 @@ import com.wayne.apihub.modules.dataapi.conf.SolrApiConf;
 import com.wayne.apihub.modules.dataapi.exception.DataApiException;
 import com.wayne.apihub.modules.dataapi.factory.SolrApiHandlerFactory;
 import com.wayne.apihub.service.DataApiConfService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Wayne
  */
-@Api(tags = {"Solr API 管理"})
+@Tag(name = "SolrApiController", description = "Solr API Management")
 @Slf4j
 @RestController
 @RequestMapping("/v1/api/solr")
@@ -45,9 +45,9 @@ public class SolrApiController {
         this.solrApiHandlerFactory = solrApiHandlerFactory;
     }
 
-    @ApiOperation(value = "注册 Solr API", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Register Solr API", method = "POST")
     @PostMapping("/registerApi")
-    public BaseResponse registerApi(@RequestBody SolrApiConf solrApiInfo) {
+    public BaseResponse registerApi(@ModelAttribute @RequestBody SolrApiConf solrApiInfo) {
         BaseResponse baseResponse;
         try {
             solrApiHandlerFactory.registerApi(solrApiInfo);
@@ -60,9 +60,9 @@ public class SolrApiController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "分页获取 Solr API 信息", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "List Solr API Configuration", method = "POST")
     @PostMapping("/listApi")
-    public BaseResponse listApi(@RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listApi(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataApiConfService.listSolrApiConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -74,9 +74,9 @@ public class SolrApiController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "启用 Solr API", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Enable Solr API", method = "GET")
     @GetMapping("/enableApi")
-    public BaseResponse enableApi(@ApiParam(value = "API ID") @RequestParam("id") Long id) {
+    public BaseResponse enableApi(@Parameter(description = "API ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             solrApiHandlerFactory.enableApi(id);
@@ -92,9 +92,9 @@ public class SolrApiController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "禁用 Solr API", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Disable Solr API", method = "GET")
     @GetMapping("/disableApi")
-    public BaseResponse disableApi(@ApiParam(value = "API ID") @RequestParam("id") Long id) {
+    public BaseResponse disableApi(@Parameter(description = "API ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             solrApiHandlerFactory.disableApi(id);

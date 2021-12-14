@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +28,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@ApiModel("统一返回类")
+@Schema(name = "BaseResponse", description = "Base class for response entity")
 public class BaseResponse {
     public static final Integer STATUS_OK = 200;
     public static final Integer STATUS_BAD = 400;
@@ -37,23 +36,23 @@ public class BaseResponse {
     public static final Integer STATUS_REJECT = 403;
     public static final Integer STATUS_ERROR = 500;
 
-    private static final String LOGIN_SUCCESS_MESSAGE = "登录成功";
-    private static final String LOGIN_FAILED_MESSAGE = "登录失败";
-    private static final String LOGOUT_SUCCESS_MESSAGE = "登出成功";
+    private static final String LOGIN_SUCCESS_MESSAGE = "Login complete";
+    private static final String LOGIN_FAILED_MESSAGE = "Login fail";
+    private static final String LOGOUT_SUCCESS_MESSAGE = "Logout complete";
 
-    private static final String OK_MESSAGE = "请求成功";
-    private static final String BAD_MESSAGE = "参数错误";
-    private static final String NOT_LOGIN_MESSAGE = "未登录";
-    private static final String REJECT_MESSAGE = "拒绝访问";
-    private static final String ERROR_MESSAGE = "请求失败";
+    private static final String OK_MESSAGE = "SUCCESS";
+    private static final String BAD_MESSAGE = "Wrong Parameter";
+    private static final String NOT_LOGIN_MESSAGE = "User not login";
+    private static final String REJECT_MESSAGE = "Access denied";
+    private static final String ERROR_MESSAGE = "ERROR";
 
     private static final BaseResponse COMMON_SUCCESS_RESPONSE = new BaseResponse(STATUS_OK, OK_MESSAGE, null);
 
-    @ApiModelProperty("响应状态码")
+    @Schema(description = "Response code")
     private Integer code;
-    @ApiModelProperty("响应信息")
+    @Schema(description = "Response message")
     private String message;
-    @ApiModelProperty("响应数据")
+    @Schema(description = "Response data")
     private Object data;
 
     public static BaseResponse ok() {

@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.query.request;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,10 +26,10 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Hbase API 请求", parent = BaseQueryRequest.class)
+@Schema(name = "HbaseQueryRequest", description = "Hbase API request")
 public class HbaseQueryRequest extends BaseQueryRequest {
-    @ApiModelProperty(value = "起始Rowkey（包含）")
+    @Schema(description = "Start Rowkey (included)")
     private String startRowKey;
-    @ApiModelProperty(value = "结束Rowkey（不包含）")
+    @Schema(description = "End Rowkey (excluded)")
     private String endRowKey;
 }

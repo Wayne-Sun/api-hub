@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.datasource.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,10 +26,10 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Solr 数据源 配置信息", parent = BaseSourceConf.class)
+@Schema(name = "SolrSourceConf", description = "Solr data source configuration entity")
 public class SolrSourceConf extends BaseSourceConf {
-    @ApiModelProperty(value = "Solr zookeeper hosts")
+    @Schema(description = "Solr zookeeper hosts")
     private String zkHosts;
-    @ApiModelProperty(value = "Solr zookeeper chroot")
+    @Schema(description = "Solr zookeeper chroot")
     private String zkChroot;
 }

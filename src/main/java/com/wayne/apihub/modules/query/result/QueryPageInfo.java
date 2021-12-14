@@ -15,6 +15,7 @@
  */
 package com.wayne.apihub.modules.query.result;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,12 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Schema(name = "QueryPageInfo", description = "Response paging information")
 public class QueryPageInfo {
+    @Schema(description = "The total size of the query result set")
     private long total;
+    @Schema(description = "Current page number")
     private int pageNum;
+    @Schema(description = "Current page size")
     private int pageSize;
 }

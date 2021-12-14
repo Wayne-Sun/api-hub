@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataApiHbaseDao {
     /**
-     * insert Hbase API info
+     * insert Hbase API configuration
      *
-     * @param hbaseApiConf HbaseApiInfo
+     * @param hbaseApiConf HbaseApiConf
      */
-    void insertHbaseApi(@Param("hbaseApiInfo") HbaseApiConf hbaseApiConf);
+    void insertHbaseApi(@Param("hbaseApiConf") HbaseApiConf hbaseApiConf);
 
     /**
-     * list Hbase API info
+     * list Hbase API configuration
      *
-     * @return HbaseApiInfo
+     * @return HbaseApiConf
      */
     List<HbaseApiConf> listHbaseApi();
 
     /**
-     * get Hbase API info by id
+     * get Hbase API configuration by id
      *
      * @param id id of the API
-     * @return HbaseApiInfo
+     * @return HbaseApiConf
      */
     HbaseApiConf getHbaseApiById(@Param("id") Long id);
 

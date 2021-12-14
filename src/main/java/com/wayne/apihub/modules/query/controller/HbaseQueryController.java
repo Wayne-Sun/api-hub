@@ -19,21 +19,18 @@ import com.wayne.apihub.model.BaseResponse;
 import com.wayne.apihub.modules.query.exception.QueryParamException;
 import com.wayne.apihub.modules.query.handler.HbaseQueryHandler;
 import com.wayne.apihub.modules.query.request.HbaseQueryRequest;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
 /**
  * @author Wayne
  */
-@Api(tags = {"Hbase API 查询处理"})
+@Tag(name = "HbaseQueryController", description = "Hbase API Query Handler")
 @Slf4j
 @RestController
 @RequestMapping("/v1/query")
@@ -45,9 +42,9 @@ public class HbaseQueryController {
         this.hbaseQueryHandler = hbaseQueryHandler;
     }
 
-    @ApiOperation(value = "Hbase API 查询", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Hbase API query", method = "POST")
     @PostMapping("/hbase")
-    public BaseResponse query(@RequestBody HbaseQueryRequest hbaseQueryRequest) {
+    public BaseResponse query(@ModelAttribute @RequestBody HbaseQueryRequest hbaseQueryRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = hbaseQueryHandler.handle(hbaseQueryRequest);

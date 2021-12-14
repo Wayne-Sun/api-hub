@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataApiMysqlDao {
     /**
-     * insert Mysql API info
+     * insert Mysql API configuration
      *
-     * @param mysqlApiInfo MysqlApiInfo
+     * @param mysqlApiConf MysqlApiConf
      */
-    void insertMysqlApi(@Param("mysqlApiInfo") MysqlApiConf mysqlApiInfo);
+    void insertMysqlApi(@Param("mysqlApiConf") MysqlApiConf mysqlApiConf);
 
     /**
-     * list Mysql API info
+     * list Mysql API configuration
      *
-     * @return MysqlApiInfo
+     * @return MysqlApiConf
      */
     List<MysqlApiConf> listMysqlApi();
 
     /**
-     * get Mysql API info by id
+     * get Mysql API configuration by id
      *
      * @param id id of the API
-     * @return MysqlApiInfo
+     * @return MysqlApiConf
      */
     MysqlApiConf getMysqlApiById(@Param("id") Long id);
 

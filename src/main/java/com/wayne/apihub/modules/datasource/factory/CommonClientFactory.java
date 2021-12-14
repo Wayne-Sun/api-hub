@@ -32,7 +32,7 @@ public interface CommonClientFactory {
     /**
      * create a client and add to the client factory
      *
-     * @param baseSourceConf source info of the client
+     * @param baseSourceConf source configuration of the client
      * @throws Exception exception
      */
     void createClient(BaseSourceConf baseSourceConf) throws Exception;
@@ -40,7 +40,7 @@ public interface CommonClientFactory {
     /**
      * initialize client while initializing clientFactory
      *
-     * @param baseSourceConf BaseSourceInfo
+     * @param baseSourceConf source configuration of the client
      * @throws Exception exception
      */
     void initClient(BaseSourceConf baseSourceConf) throws Exception;

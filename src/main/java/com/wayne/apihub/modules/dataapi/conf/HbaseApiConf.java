@@ -15,8 +15,7 @@
  */
 package com.wayne.apihub.modules.dataapi.conf;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,12 +26,12 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@ApiModel(value = "Hbase API 配置信息", parent = BaseApiConf.class)
+@Schema(name = "HbaseApiConf", description = "Hbase API configuration entity")
 public class HbaseApiConf extends BaseApiConf {
-    @ApiModelProperty(value = "Hbase API 类型", allowableValues = "1-get, 2-scan")
+    @Schema(description = "Hbase API type", allowableValues = "1-get, 2-scan")
     private Integer type;
-    @ApiModelProperty(value = "Hbase 表名")
+    @Schema(description = "Hbase table")
     private String tableName;
-    @ApiModelProperty(value = "Hbase 返回列名称列表")
+    @Schema(description = "Hbase columns")
     private String columns;
 }

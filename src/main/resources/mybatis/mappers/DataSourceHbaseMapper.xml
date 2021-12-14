@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <mapper namespace="com.wayne.apihub.dao.DataSourceHbaseDao">
-    <resultMap id="hbaseSourceInfoMap" type="com.wayne.apihub.modules.datasource.conf.HbaseSourceConf">
+    <resultMap id="hbaseSourceConfMap" type="com.wayne.apihub.modules.datasource.conf.HbaseSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="comments" property="comments"/>
@@ -26,13 +26,13 @@ limitations under the License.
     <insert id="insertHbaseSource" parameterType="com.wayne.apihub.modules.datasource.conf.HbaseSourceConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_source_hbase (name,comments,hbase_site_path,core_site_path) VALUES
-        (#{hbaseSourceInfo.name,jdbcType=VARCHAR},#{hbaseSourceInfo.comments,jdbcType=VARCHAR},
-        #{hbaseSourceInfo.hbaseSitePath,jdbcType=VARCHAR},#{hbaseSourceInfo.coreSitePath,jdbcType=VARCHAR})
+        (#{hbaseSourceConf.name,jdbcType=VARCHAR},#{hbaseSourceConf.comments,jdbcType=VARCHAR},
+        #{hbaseSourceConf.hbaseSitePath,jdbcType=VARCHAR},#{hbaseSourceConf.coreSitePath,jdbcType=VARCHAR})
     </insert>
-    <select id="listHbaseSource" resultMap="hbaseSourceInfoMap">
+    <select id="listHbaseSource" resultMap="hbaseSourceConfMap">
         SELECT id,name,comments,hbase_site_path,core_site_path FROM api_hub.data_source_hbase ORDER BY id ASC
     </select>
-    <select id="getHbaseSourceById" resultMap="hbaseSourceInfoMap" parameterType="java.lang.Long">
+    <select id="getHbaseSourceById" resultMap="hbaseSourceConfMap" parameterType="java.lang.Long">
         SELECT id,name,comments,hbase_site_path,core_site_path FROM api_hub.data_source_hbase WHERE id = #{id}
     </select>
     <update id="updateHbaseSourceStatus">

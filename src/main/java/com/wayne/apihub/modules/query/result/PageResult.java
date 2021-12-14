@@ -16,6 +16,7 @@
 package com.wayne.apihub.modules.query.result;
 
 import com.google.gson.JsonArray;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,10 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Schema(name = "PageResult", description = "Response content for paging request")
 public class PageResult {
+    @Schema(description = "Response data")
     private JsonArray data;
+    @Schema(description = "Response paging information")
     private QueryPageInfo pageInfo;
 }

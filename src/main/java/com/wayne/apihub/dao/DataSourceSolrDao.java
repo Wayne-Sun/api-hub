@@ -27,24 +27,24 @@ import java.util.List;
 @Mapper
 public interface DataSourceSolrDao {
     /**
-     * insert solr source info
+     * insert solr source configuration
      *
-     * @param solrSourceInfo SolrSourceInfo
+     * @param solrSourceConf SolrSourceConf
      */
-    void insertSolrSource(@Param("solrSourceInfo") SolrSourceConf solrSourceInfo);
+    void insertSolrSource(@Param("solrSourceConf") SolrSourceConf solrSourceConf);
 
     /**
-     * list solr source info
+     * list solr source configuration
      *
-     * @return SolrSourceInfo
+     * @return SolrSourceConf
      */
     List<SolrSourceConf> listSolrSource();
 
     /**
-     * get solr source info by id
+     * get solr source configuration by id
      *
      * @param id id of solr source
-     * @return SolrSourceInfo
+     * @return SolrSourceConf
      */
     SolrSourceConf getSolrSourceById(@Param("id") Long id);
 

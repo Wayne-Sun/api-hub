@@ -33,7 +33,7 @@ public class ResponseUtils {
         try (OutputStream out = response.getOutputStream()) {
             StreamUtils.copy(JsonUtils.toString(data), StandardCharsets.UTF_8, out);
         } catch (Exception e) {
-            log.error("Response输出Json异常：", e);
+            log.error("Response Json output error：", e);
         }
     }
 }

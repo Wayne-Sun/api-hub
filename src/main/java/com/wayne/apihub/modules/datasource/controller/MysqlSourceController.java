@@ -22,9 +22,9 @@ import com.wayne.apihub.modules.datasource.conf.MysqlSourceConf;
 import com.wayne.apihub.modules.datasource.exception.DataSourceException;
 import com.wayne.apihub.modules.datasource.factory.MysqlClientFactory;
 import com.wayne.apihub.service.DataSourceConfService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Wayne
  */
-@Api(tags = {"Mysql 数据源管理"})
+@Tag(name = "MysqlSourceController", description = "Mysql Data Source Management")
 @Slf4j
 @RestController
 @RequestMapping("/v1/source/mysql")
@@ -46,9 +46,9 @@ public class MysqlSourceController {
         this.mysqlClientFactory = mysqlClientFactory;
     }
 
-    @ApiOperation(value = "创建 Mysql 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Register Mysql data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@RequestBody MysqlSourceConf mysqlSourceInfo) {
+    public BaseResponse insertSource(@ModelAttribute @RequestBody MysqlSourceConf mysqlSourceInfo) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertMysqlSourceConf(mysqlSourceInfo);
@@ -60,9 +60,9 @@ public class MysqlSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "分页获取 Mysql 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "List Mysql data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listMysqlSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -74,9 +74,9 @@ public class MysqlSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "初始化 Mysql 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Initialize Mysql data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse initSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             mysqlClientFactory.initClient(hbaseSourceInfo);
@@ -89,9 +89,9 @@ public class MysqlSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "启用 Mysql 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Enable Mysql data sourcce", method = "GET")
     @GetMapping("/enableSource")
-    public BaseResponse enableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse enableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             mysqlClientFactory.enableClient(id);
@@ -107,9 +107,9 @@ public class MysqlSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "禁用 Mysql 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Disable Mysql data source", method = "GET")
     @GetMapping("/disableSource")
-    public BaseResponse disableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse disableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             mysqlClientFactory.disableClient(id);

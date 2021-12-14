@@ -21,9 +21,9 @@ import com.wayne.apihub.modules.datasource.conf.HbaseSourceConf;
 import com.wayne.apihub.modules.datasource.exception.DataSourceException;
 import com.wayne.apihub.modules.datasource.factory.HbaseClientFactory;
 import com.wayne.apihub.service.DataSourceConfService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author Wayne
  */
-@Api(tags = {"Hbase 数据源管理"})
+@Tag(name = "HbaseSourceController", description = "Hbase Data Source Management")
 @Slf4j
 @RestController
 @RequestMapping("/v1/source/hbase")
@@ -45,9 +45,9 @@ public class HbaseSourceController {
         this.hbaseClientFactory = hbaseClientFactory;
     }
 
-    @ApiOperation(value = "创建 Hbase 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Register Hbase data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse insertSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertHbaseSourceConf(hbaseSourceInfo);
@@ -59,9 +59,9 @@ public class HbaseSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "分页获取 Hbase 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "List Hbase data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listHbaseSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -73,9 +73,9 @@ public class HbaseSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "初始化 Hbase 数据源", response = BaseResponse.class, httpMethod = "POST", consumes = "application/json", produces = "application/json")
+    @Operation(description = "Initialize Hbase data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse initSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             hbaseClientFactory.initClient(hbaseSourceInfo);
@@ -88,9 +88,9 @@ public class HbaseSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "启用 Hbase 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Enable Hbase data source", method = "GET")
     @GetMapping("/enableSource")
-    public BaseResponse enableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse enableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             hbaseClientFactory.enableClient(id);
@@ -106,9 +106,9 @@ public class HbaseSourceController {
         return baseResponse;
     }
 
-    @ApiOperation(value = "禁用 Hbase 数据源", response = BaseResponse.class, httpMethod = "GET", produces = "application/json")
+    @Operation(description = "Disable Hbase data source", method = "GET")
     @GetMapping("/disableSource")
-    public BaseResponse disableSource(@ApiParam(value = "数据源 ID") @RequestParam("id") Long id) {
+    public BaseResponse disableSource(@Parameter(description = "data source ID") @RequestParam("id") Long id) {
         BaseResponse baseResponse;
         try {
             hbaseClientFactory.disableClient(id);
