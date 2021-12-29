@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenapiConfig {
     @Bean
-    public OpenAPI springShopOpenAPI() {
+    public OpenAPI createOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("API-HUB API Reference")

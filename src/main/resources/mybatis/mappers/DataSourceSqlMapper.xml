@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Copyright 2021 Wayne
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<mapper>
+    <resultMap id="sqlSourceConfMap" type="com.wayne.apihub.modules.datasource.conf.SqlSourceConf">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="comments" property="comments"/>
+        <result column="dialect" property="dialect"/>
+        <result column="url" property="url"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+    </resultMap>
+    <insert id="insertSqlSource" parameterType="com.wayne.apihub.modules.datasource.conf.SqlSourceConf"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO api_hub.data_source_sql (name,comments,dialect,url,username,password) VALUES
+        (#{sqlSourceConf.name,jdbcType=VARCHAR},#{sqlSourceConf.comments,jdbcType=VARCHAR},#{sqlSourceConf.dialect,jdbcType=VARCHAR},
+        #{sqlSourceConf.url,jdbcType=VARCHAR},#{sqlSourceConf.username,jdbcType=VARCHAR},#{sqlSourceConf.password,jdbcType=VARCHAR})
+    </insert>
+    <select id="listSqlSource" resultMap="sqlSourceConfMap">
+        SELECT id,name,comments,dialect,url,username,password FROM api_hub.data_source_sql ORDER BY id ASC
+    </select>
+    <select id="getSqlSourceById" resultMap="sqlSourceConfMap" parameterType="java.lang.Long">
+        SELECT id,name,comments,dialect,url,username,password FROM api_hub.data_source_sql WHERE id = #{id}
+    </select>
+    <update id="updateSqlSourceStatus">
+        UPDATE api_hub.data_source_sql
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

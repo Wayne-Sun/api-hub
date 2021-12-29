@@ -24,7 +24,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-@Schema(name = "BaseQueryRequest", description = "Base class for API request", subTypes = {HbaseQueryRequest.class, MysqlQueryRequest.class, SolrQueryRequest.class})
+@Schema(name = "BaseQueryRequest", description = "Base class for API request", subTypes = {HbaseQueryRequest.class, MysqlQueryRequest.class, SolrQueryRequest.class, SqlQueryRequest.class})
 public class BaseQueryRequest {
     @Schema(description = "API ID")
     private Long id;

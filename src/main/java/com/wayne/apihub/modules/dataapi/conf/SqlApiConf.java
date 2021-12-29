@@ -13,35 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wayne.apihub.modules.query.result;
+package com.wayne.apihub.modules.dataapi.conf;
 
+import com.wayne.apihub.modules.common.entity.SqlParam;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * @author Wayne
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Schema(name = "QueryPageInfo", description = "Response paging information")
-public class QueryPageInfo {
-    @Schema(description = "The total size of the query result set")
-    private long total;
-    @Schema(description = "Current page number")
-    private int pageNum;
-    @Schema(description = "Current page size")
-    private int pageSize;
-
-    public int getStartRow() {
-        return (pageNum == 0) ? 1 : (pageNum - 1) * pageSize + 1;
-    }
-
-    public int getEndRow() {
-        return (pageNum == 0) ? pageSize : pageNum * pageSize;
-    }
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class SqlApiConf extends BaseApiConf {
+    @Schema(description = "Formated SQL")
+    private String sql;
+    @Schema(description = "Definition of SQL parameter")
+    private List<SqlParam> paramList;
+    @Schema(description = "Whether to page")
+    private Integer pageTag;
+    @Schema(description = "Fixed page size")
+    private Integer pageSize;
 }

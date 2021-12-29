@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wayne.apihub.modules.dataapi.conf;
+package com.wayne.apihub.modules.common.entity;
 
 import com.wayne.apihub.model.BaseDataObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author Wayne
@@ -27,12 +24,11 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@Schema(name = "BaseApiConf", description = "Base class for API configuration", subTypes = {SqlApiConf.class, HbaseApiConf.class, MysqlApiConf.class, SolrApiConf.class})
-public class BaseApiConf extends BaseDataObject {
-    @Schema(description = "API data source id")
-    private Long dataSourceId;
-    @Schema(description = "API name")
+@AllArgsConstructor
+@NoArgsConstructor
+public class SqlParam extends BaseDataObject {
+    private Long apiId;
     private String name;
-    @Schema(description = "API description")
-    private String comments;
+    private String type;
+    private String description;
 }

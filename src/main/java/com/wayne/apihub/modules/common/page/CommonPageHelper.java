@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wayne.apihub.utils;
+package com.wayne.apihub.modules.common.page;
+
+import com.wayne.apihub.modules.query.result.QueryPageInfo;
+
+import java.util.Map;
 
 /**
  * @author Wayne
  */
-public class Constants {
-    public static final String STRING = "STRING";
-    public static final String NUMERIC = "NUMERIC";
-    public static final Integer STATUS_ENABLE = 1;
-    public static final Integer STATUS_DISABLE = 0;
-    public static final String ORACLE = "ORACLE";
-    public static final String MYSQL = "MYSQL";
-    public static final String PARAM_START_ROW = "PARAM_START_ROW";
-    public static final String PARAM_END_ROW = "PARAM_END_ROW";
+public interface CommonPageHelper {
+    String getPageSql(String sql, QueryPageInfo queryPageInfo);
+
+    Map<String, Object> processParamMap(Map<String, Object> paramMap, QueryPageInfo queryPageInfo);
 }

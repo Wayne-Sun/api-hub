@@ -16,6 +16,7 @@
 package com.wayne.apihub.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wayne.apihub.modules.common.entity.SqlParam;
 import com.wayne.apihub.modules.dataapi.conf.BaseApiConf;
 import com.wayne.apihub.modules.datasource.conf.BaseSourceConf;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +32,7 @@ import java.util.Date;
 @Data
 @ToString
 @EqualsAndHashCode
-@Schema(name = "BaseDataObject", description = "Base class for DB entity", subTypes = {BaseApiConf.class, BaseSourceConf.class})
+@Schema(name = "BaseDataObject", description = "Base class for DB entity", subTypes = {BaseApiConf.class, BaseSourceConf.class, SqlParam.class})
 public class BaseDataObject {
     @Schema(description = "Primary Key")
     private Long id;

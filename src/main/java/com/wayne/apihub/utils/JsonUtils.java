@@ -15,10 +15,16 @@
  */
 package com.wayne.apihub.utils;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wayne.apihub.modules.common.entity.SqlParam;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +33,7 @@ import java.util.Map;
  */
 public class JsonUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final JsonFactory FACTORY = new JsonFactory();
 
     public static String toString(Object obj) throws JsonProcessingException {
         if (obj == null) {
@@ -52,5 +59,38 @@ public class JsonUtils {
 
     public static <T> T nativeRead(String json, TypeReference<T> type) throws JsonProcessingException {
         return MAPPER.readValue(json, type);
+    }
+
+    public static Map<String, Object> toMap(String json, Map<String, SqlParam> paramMap) throws IOException {
+        JsonParser jsonParser = FACTORY.createParser(json);
+        Map<String, Object> result = new HashMap<>();
+        while (!jsonParser.isClosed()) {
+            JsonToken token = jsonParser.nextToken();
+            if (JsonToken.FIELD_NAME == token) {
+                String fieldName = jsonParser.getCurrentName();
+                jsonParser.nextToken();
+                SqlParam sqlParam = paramMap.get(fieldName);
+                if (Constants.NUMERIC.equals(sqlParam.getType())) {
+                    result.put(fieldName, jsonParser.getValueAsDouble());
+                } else {
+                    result.put(fieldName, jsonParser.getValueAsString());
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Boolean checkSchema(String json, Map<String, SqlParam> paramMap) throws IOException {
+        JsonParser jsonParser = FACTORY.createParser(json);
+        boolean result = true;
+        while (!jsonParser.isClosed()) {
+            JsonToken token = jsonParser.nextToken();
+            if (JsonToken.FIELD_NAME == token) {
+                String fieldName = jsonParser.getCurrentName();
+                jsonParser.nextToken();
+                result = paramMap.containsKey(fieldName);
+            }
+        }
+        return result;
     }
 }
