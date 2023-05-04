@@ -15,7 +15,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<mapper>
+<mapper namespace="com.wayne.apihub.dao.DataSourceSqlDao">
     <resultMap id="sqlSourceConfMap" type="com.wayne.apihub.modules.datasource.conf.SqlSourceConf">
         <id column="id" property="id"/>
         <result column="name" property="name"/>

@@ -45,7 +45,7 @@ limitations under the License.
     <insert id="insertSqlApi" parameterType="com.wayne.apihub.modules.dataapi.conf.SqlApiConf"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO api_hub.data_api_sql
-        (data_source_id,name,comments,sql,page_tag,page_size,status,create_time,create_by) VALUES
+        (data_source_id,name,comments,`sql`,page_tag,page_size,status,create_time,create_by) VALUES
         (#{sqlApiConf.dataSourceId,jdbcType=NUMERIC},#{sqlApiConf.name,jdbcType=VARCHAR},#{sqlApiConf.comments,jdbcType=VARCHAR},
         #{sqlApiConf.sql,jdbcType=LONGVARCHAR},#{sqlApiConf.pageTag,jdbcType=NUMERIC},#{sqlApiConf.pageSize,jdbcType=NUMERIC},
         #{sqlApiConf.status,jdbcType=NUMERIC},#{sqlApiConf.createTime,jdbcType=TIMESTAMP},#{sqlApiConf.createBy,jdbcType=VARCHAR})
@@ -59,11 +59,11 @@ limitations under the License.
         </foreach>
     </insert>
     <select id="listSqlApi" resultMap="sqlApiConfMap">
-        SELECT id,data_source_id,name,comments,sql,page_tag,page_size,status,create_time,create_by
+        SELECT id,data_source_id,name,comments,`sql`,page_tag,page_size,status,create_time,create_by
         FROM api_hub.data_api_sql ORDER BY id ASC
     </select>
     <select id="getSqlApiById" resultMap="sqlApiConfMap" parameterType="java.lang.Long">
-        SELECT id,data_source_id,name,comments,sql,page_tag,page_size,status,create_time,create_by
+        SELECT id,data_source_id,name,comments,`sql`,page_tag,page_size,status,create_time,create_by
         FROM api_hub.data_api_sql WHERE id = #{id}
     </select>
     <select id="listApiParamByApiId" resultMap="sqlParamMap" parameterType="java.lang.Long">

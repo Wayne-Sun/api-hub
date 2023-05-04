@@ -23,7 +23,7 @@ import lombok.*;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @ToString
 @Schema(name = "BasePageRequest", description = "Base class for paging request")
 public class BasePageRequest {
