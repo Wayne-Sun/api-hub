@@ -8,6 +8,18 @@ import type { HbaseSourceConf } from '@/types'
 import type { Mock } from 'vitest'
 import * as datasourceApi from '@/api/datasource'
 
+// Shared mock message for verifying naive-ui error display
+const mockMessage = vi.hoisted(() => ({ error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() }))
+
+// Mock naive-ui to prevent useMessage() from crashing in tests without n-message-provider
+vi.mock('naive-ui', async (importOriginal) => {
+  const mod = await importOriginal()
+  return {
+    ...(mod as Record<string, unknown>),
+    useMessage: () => mockMessage,
+  }
+})
+
 // Mock the API module to avoid real HTTP calls
 vi.mock('@/api/datasource', () => ({
   listHbaseSources: vi.fn().mockResolvedValue({ data: { data: { list: [], total: 0 } } }),
@@ -204,41 +216,17 @@ describe('DataSourceView.vue', () => {
     expect(wrapper.find('.v-pagination').exists()).toBe(false)
   })
 
-  it('shows error snackbar when store has error', () => {
-    store.error = '网络连接失败'
+  it('calls message.error when store.error is set after mount and clears it', () => {
     wrapper = createWrapper()
-    const snackbar = wrapper.find('.v-snackbar')
-    expect(snackbar.exists()).toBe(true)
-    expect(snackbar.text()).toContain('网络连接失败')
+    store.error = '出错了'
+    expect(mockMessage.error).toHaveBeenCalledWith('出错了')
+    expect(store.error).toBeNull()
   })
 
-  it('hides error snackbar when store has no error', () => {
+  it('does not show error elements when store.error is null', () => {
     store.error = null
     wrapper = createWrapper()
     expect(wrapper.find('.v-snackbar').exists()).toBe(false)
-  })
-
-  it('clears error when snackbar close is emitted', async () => {
-    store.error = '出错了'
-    wrapper = createWrapper()
-
-    // Emit the close event
-    const snackbar = wrapper.findComponent({ name: 'ErrorSnackbar-stub' })
-    // If ErrorSnackbar is not stubbed, find its emit differently
-    // ErrorSnackbar is a real component, so we check via its emit
-    const errorSnackbar = wrapper.findComponent({ name: 'ErrorSnackbar' })
-    if (errorSnackbar.exists()) {
-      errorSnackbar.vm.$emit('close')
-    } else {
-      // Fallback: the real component emits 'close' from its button
-      const closeBtn = wrapper.find('.v-snackbar .v-btn')
-      if (closeBtn.exists()) {
-        await closeBtn.trigger('click')
-      }
-    }
-
-    await wrapper.vm.$nextTick()
-    expect(store.error).toBeNull()
   })
 
   describe('initial fetch on mount', () => {

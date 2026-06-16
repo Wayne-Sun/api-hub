@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { NModal, NCard, NButton } from 'naive-ui'
+
 defineProps<{
   show: boolean
   title: string
@@ -13,17 +15,22 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <v-dialog :model-value="show" max-width="400">
-    <v-card>
-      <v-card-title>{{ title }}</v-card-title>
-      <v-card-text>{{ message }}</v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="text" @click="emit('cancel')">取消</v-btn>
-        <v-btn color="primary" variant="text" @click="emit('confirm')">
-          {{ confirmText || '确认' }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <n-modal
+    :show="show"
+    preset="card"
+    :style="{ maxWidth: '400px' }"
+    @update:show="(v) => !v && emit('cancel')"
+  >
+    <n-card :title="title">
+      {{ message }}
+      <template #footer>
+        <div style="display: flex; justify-content: flex-end; gap: 8px">
+          <n-button @click="emit('cancel')">取消</n-button>
+          <n-button type="primary" @click="emit('confirm')">
+            {{ confirmText || '确认' }}
+          </n-button>
+        </div>
+      </template>
+    </n-card>
+  </n-modal>
 </template>

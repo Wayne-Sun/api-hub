@@ -4,14 +4,16 @@ import { useDatasourceStore } from '@/stores/datasource'
 import { useAppStore } from '@/stores/app'
 import type { SourceType } from '@/types'
 import { storeToRefs } from 'pinia'
+import { useMessage } from 'naive-ui'
 import EmptyState from '@/components/EmptyState.vue'
-import ErrorSnackbar from '@/components/ErrorSnackbar.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import DataSourceFormDialog from '@/components/datasource/DataSourceFormDialog.vue'
 
 const store = useDatasourceStore()
 const { sources, error } = storeToRefs(store)
 const { fetchSources } = store
+
+const message = useMessage()
 
 const appStore = useAppStore()
 
@@ -73,6 +75,14 @@ watch([activeTab, page], ([newTab, newPage]) => {
 
 onMounted(() => {
   fetchSources(activeTab.value, page.value)
+})
+
+// Watch for store errors and display as naive-ui message
+watch(() => store.error, (err) => {
+  if (err) {
+    message.error(err)
+    store.error = null
+  }
 })
 
 function onPageChange(newPage: number) {
@@ -220,11 +230,5 @@ defineExpose({ confirmDialog, actionLoading, onToggle, handleConfirm, handleCanc
       @cancel="handleCancel"
     />
 
-    <!-- Error state -->
-    <ErrorSnackbar
-      :show="!!error"
-      :message="error || ''"
-      @close="store.error = null"
-    />
   </div>
 </template>
