@@ -43,3 +43,7 @@ frontend/*.local
 frontend/cypress/videos/
 frontend/cypress/screenshots/
 __screenshots__/
+
+# OMO
+.omo/
+.playwright-mcp/
