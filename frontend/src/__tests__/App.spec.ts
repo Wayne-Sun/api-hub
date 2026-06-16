@@ -1,40 +1,32 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from '../App.vue'
 
-// Stub Vuetify components to avoid jsdom rendering issues
-const vuetifyStubs = {
-  'v-app': { template: '<div><slot /></div>' },
-  'v-navigation-drawer': {
-    template: '<div class="v-navigation-drawer" :class="{ open: modelValue }"><slot /></div>',
-    props: ['modelValue'],
-  },
-  'v-list-item': {
-    template: '<div class="v-list-item"><span class="v-list-item-title">{{ title }}</span><slot /></div>',
-    props: ['prependIcon', 'title', 'to'],
-  },
-  'v-divider': { template: '<hr class="v-divider" />' },
-  'v-list': { template: '<div class="v-list"><slot /></div>' },
-  'v-app-bar': { template: '<div class="v-app-bar"><slot /></div>' },
-  'v-app-bar-nav-icon': {
-    template: '<button class="v-app-bar-nav-icon" @click="$emit(\'click\')"><slot /></button>',
-    emits: ['click'],
-  },
-  'v-app-bar-title': { template: '<span class="v-app-bar-title"><slot /></span>' },
-  'v-main': { template: '<main><slot /></main>' },
-  'v-container': { template: '<div class="v-container" fluid><slot /></div>', props: ['fluid'] },
-  'v-snackbar': {
-    template: '<div class="v-snackbar" v-show="modelValue"><slot /><slot name="actions" /></div>',
-    props: ['modelValue', 'color', 'timeout'],
-    emits: ['update:modelValue'],
-  },
-  'v-btn': {
-    template: '<button class="v-btn" :variant="variant" @click="$emit(\'click\')"><slot /></button>',
-    props: ['variant'],
-    emits: ['click'],
-  },
+// Shared mock message for verifying naive-ui error display
+const mockMessage = vi.hoisted(() => ({ error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() }))
+
+// Mock naive-ui to prevent useMessage() from crashing in tests without n-message-provider
+vi.mock('naive-ui', async (importOriginal) => {
+  const mod = await importOriginal()
+  return {
+    ...(mod as Record<string, unknown>),
+    useMessage: () => mockMessage,
+  }
+})
+
+// Stub Naive UI components to avoid jsdom rendering issues
+const naiveStubs = {
+  'snackbar-bridge': { template: '<div class="snackbar-bridge"><slot /></div>' },
+  'n-message-provider': { template: '<div class="n-message-provider"><slot /></div>' },
+  'n-config-provider': { template: '<div class="n-config-provider"><slot /></div>' },
+  'n-layout': { template: '<div class="n-layout"><slot /></div>', props: ['position', 'hasSider'] },
+  'n-layout-header': { template: '<div class="n-layout-header"><slot /></div>' },
+  'n-layout-sider': { template: '<div class="n-layout-sider" :class="{ collapsed: collapsed }"><slot /></div>', props: ['collapsed', 'collapseMode', 'showTrigger'] },
+  'n-layout-content': { template: '<div class="n-layout-content" :style="contentStyle"><slot /></div>', props: ['contentStyle'] },
+  'n-menu': { template: '<div class="n-menu"><slot /></div>', props: ['options', 'collapsed'], emits: ['update:value'] },
+  'n-button': { template: '<button class="n-button" @click="$emit(\'click\')"><slot /></button>', emits: ['click'] },
 }
 
 describe('App.vue', () => {
@@ -60,7 +52,7 @@ describe('App.vue', () => {
     wrapper = mount(App, {
       global: {
         plugins: [router, createPinia()],
-        stubs: vuetifyStubs,
+        stubs: naiveStubs,
       },
     })
     await router.isReady()
@@ -80,7 +72,7 @@ describe('App.vue', () => {
   })
 
   it('toggles drawer on hamburger click', async () => {
-    const navIcon = wrapper.find('.v-app-bar-nav-icon')
+    const navIcon = wrapper.find('.n-button')
     expect(navIcon.exists()).toBe(true)
 
     // Initially drawer is open (v-model first update)
@@ -89,21 +81,13 @@ describe('App.vue', () => {
 
     // After click, the drawer state should have been toggled.
     // Since we're using stubs, we verify behavior via the store
-    const drawer = wrapper.find('.v-navigation-drawer')
+    const drawer = wrapper.find('.n-layout-sider')
     // The drawer's modelValue prop controls visibility; we just verify the component exists
     expect(drawer.exists()).toBe(true)
   })
 
-  it('renders snackbar with close button', () => {
-    const snackbar = wrapper.find('.v-snackbar')
-    expect(snackbar.exists()).toBe(true)
-    const closeBtn = wrapper.find('.v-btn')
-    expect(closeBtn.exists()).toBe(true)
-    expect(closeBtn.text()).toBe('关闭')
-  })
-
   it('renders router view container', () => {
-    const main = wrapper.find('main')
+    const main = wrapper.find('.n-layout-content')
     expect(main.exists()).toBe(true)
   })
 })

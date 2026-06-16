@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { h, type Component, watch } from 'vue'
+import { h, type Component } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/stores/app'
 import {
-  useMessage,
   NConfigProvider,
   NMessageProvider,
   NLayout,
@@ -17,25 +16,13 @@ import {
 } from 'naive-ui'
 import { zhCN } from 'naive-ui'
 import { MenuOutline, ServerOutline, CodeSlashOutline } from '@vicons/ionicons5'
+import SnackbarBridge from '@/components/SnackbarBridge.vue'
 
 const appStore = useAppStore()
 const { drawerOpen } = storeToRefs(appStore)
 const { toggleDrawer } = appStore
 
 const router = useRouter()
-const message = useMessage()
-
-watch(
-  () => appStore.snackbar,
-  (val) => {
-    if (val?.show) {
-      ;(message as any)[val.color]?.(val.message) ||
-        message.info(val.message)
-      appStore.hideSnackbar()
-    }
-  },
-  { deep: true },
-)
 
 function handleMenuSelect(key: string) {
   router.push({ name: key })
@@ -53,7 +40,8 @@ const menuOptions = [
 
 <template>
   <n-message-provider>
-    <n-config-provider :locale="zhCN">
+    <SnackbarBridge>
+      <n-config-provider :locale="zhCN">
       <n-layout position="absolute" style="height: 100vh">
         <n-layout-header
           style="display: flex; align-items: center; padding: 0 16px; height: 48px"
@@ -80,5 +68,6 @@ const menuOptions = [
         </n-layout>
       </n-layout>
     </n-config-provider>
+    </SnackbarBridge>
   </n-message-provider>
 </template>
