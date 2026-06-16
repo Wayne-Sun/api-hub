@@ -1,21 +1,21 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ConfirmDialog from '../ConfirmDialog.vue'
 
-describe('ConfirmDialog', () => {
-  const stubs = {
-    'v-dialog': { template: '<div v-if="$attrs[\'model-value\']" class="v-dialog"><slot /></div>' },
-    'v-card': { template: '<div class="v-card"><slot /></div>' },
-    'v-card-title': { template: '<div class="v-card-title"><slot /></div>' },
-    'v-card-text': { template: '<div class="v-card-text"><slot /></div>' },
-    'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
-    'v-spacer': { template: '<span class="v-spacer" />' },
-    'v-btn': {
-      template: '<button class="v-btn" @click="$emit(\'click\')"><slot /></button>',
+vi.mock('naive-ui', async (importOriginal) => {
+  const mod = await importOriginal<Record<string, unknown>>()
+  return {
+    ...mod,
+    NModal: { template: '<div v-if="$attrs.show" class="n-modal"><slot /></div>' },
+    NCard: { template: '<div class="n-card">{{ $attrs.title }}<slot /><slot name="footer" /></div>' },
+    NButton: {
+      template: '<button class="n-button" @click="$emit(\'click\')"><slot /></button>',
       emits: ['click'],
     },
   }
+})
 
+describe('ConfirmDialog', () => {
   it('renders title and message', () => {
     const wrapper = mount(ConfirmDialog, {
       props: {
@@ -23,7 +23,6 @@ describe('ConfirmDialog', () => {
         title: '确认删除',
         message: '确定要删除吗？',
       },
-      global: { stubs },
     })
     expect(wrapper.text()).toContain('确认删除')
     expect(wrapper.text()).toContain('确定要删除吗？')
@@ -37,7 +36,6 @@ describe('ConfirmDialog', () => {
         message: 'test',
         confirmText: '确定',
       },
-      global: { stubs },
     })
     expect(wrapper.text()).toContain('确定')
   })
@@ -49,9 +47,8 @@ describe('ConfirmDialog', () => {
         title: '确认',
         message: 'test',
       },
-      global: { stubs },
     })
-    const confirmBtn = wrapper.findAll('.v-btn').find((btn) => btn.text() === '确认')
+    const confirmBtn = wrapper.findAll('button').find((btn) => btn.text() === '确认')
     await confirmBtn?.trigger('click')
     expect(wrapper.emitted('confirm')).toBeTruthy()
   })
@@ -63,9 +60,8 @@ describe('ConfirmDialog', () => {
         title: '确认',
         message: 'test',
       },
-      global: { stubs },
     })
-    const cancelBtn = wrapper.findAll('.v-btn').find((btn) => btn.text() === '取消')
+    const cancelBtn = wrapper.findAll('button').find((btn) => btn.text() === '取消')
     await cancelBtn?.trigger('click')
     expect(wrapper.emitted('cancel')).toBeTruthy()
   })

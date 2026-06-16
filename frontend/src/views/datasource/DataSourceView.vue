@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { h, ref, computed, onMounted, watch } from 'vue'
 import { useDatasourceStore } from '@/stores/datasource'
 import { useAppStore } from '@/stores/app'
 import type { SourceType } from '@/types'
 import { storeToRefs } from 'pinia'
-import { useMessage } from 'naive-ui'
+import { useMessage, NButton, NIcon, NTabs, NTab, NDataTable, NPagination, NSpin } from 'naive-ui'
+import type { DataTableColumn } from 'naive-ui'
+import { AddOutline, CheckmarkCircleOutline } from '@vicons/ionicons5'
 import EmptyState from '@/components/EmptyState.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import DataSourceFormDialog from '@/components/datasource/DataSourceFormDialog.vue'
@@ -63,9 +65,32 @@ const totalPages = computed(() => {
   return Math.ceil(tabData.value.total / pageSize)
 })
 
-/** Columns for the active tab. */
-const activeColumns = computed(() => {
-  return columnsMap[activeTab.value]
+/** Columns for the active tab, with render function for actions column. */
+const tableColumns = computed<DataTableColumn[]>(() => {
+  return columnsMap[activeTab.value].map(col => {
+    if (col.key === 'actions') {
+      return {
+        key: 'actions',
+        title: col.title,
+        render(row: Record<string, unknown>) {
+          return h(
+            NButton,
+            {
+              size: 'small',
+              quaternary: true,
+              circle: true,
+              loading: actionLoading.value,
+              onClick: () => onToggle(activeTab.value, row.id as number, row.name as string)
+            },
+            {
+              icon: () => h(NIcon, null, { default: () => h(CheckmarkCircleOutline) })
+            }
+          )
+        }
+      }
+    }
+    return col
+  })
 })
 
 // Fetch data on tab or page change
@@ -158,60 +183,38 @@ defineExpose({ confirmDialog, actionLoading, onToggle, handleConfirm, handleCanc
 
 <template>
   <div>
-    <div class="d-flex align-center mb-4">
-      <h2 class="text-h5">数据源管理</h2>
-      <v-spacer />
-      <v-btn color="primary" prepend-icon="mdi-plus" @click="showCreateDialog = true">
+    <div style="display: flex; align-items: center; margin-bottom: 16px">
+      <h2 style="font-size: 24px; font-weight: 500; margin: 0">数据源管理</h2>
+      <div style="flex: 1" />
+      <n-button type="primary" @click="showCreateDialog = true">
+        <template #icon><n-icon><AddOutline /></n-icon></template>
         新增
-      </v-btn>
+      </n-button>
     </div>
 
-    <v-tabs v-model="activeTab">
-      <v-tab value="hbase">HBase</v-tab>
-      <v-tab value="solr">Solr</v-tab>
-      <v-tab value="sql">SQL</v-tab>
-    </v-tabs>
+    <n-tabs v-model:value="activeTab" type="line">
+      <n-tab name="hbase">HBase</n-tab>
+      <n-tab name="solr">Solr</n-tab>
+      <n-tab name="sql">SQL</n-tab>
+    </n-tabs>
 
-    <!-- Loading state -->
-    <v-progress-linear
-      v-if="tabData.loading"
-      indeterminate
-      color="primary"
-    />
+    <!-- Loading + Data table or Empty state -->
+    <n-spin :show="tabData.loading" style="margin-top: 8px">
+      <n-data-table
+        v-if="tabData.list.length > 0"
+        :columns="tableColumns"
+        :data="tabData.list"
+        bordered
+        single-line
+      />
 
-    <!-- Data table -->
-    <v-data-table
-      v-else-if="tabData.list.length > 0"
-      :headers="activeColumns"
-      :items="tabData.list"
-      :hide-default-footer="true"
-      class="mt-2"
-    >
-      <template #item.actions="{ item }">
-        <v-btn
-          icon="mdi-check-circle-outline"
-          variant="text"
-          size="small"
-          :loading="actionLoading"
-          @click="onToggle(activeTab, item.id as number, item.name)"
-        />
-      </template>
-    </v-data-table>
+      <EmptyState v-else message="暂无数据" />
+    </n-spin>
 
     <!-- Pagination -->
-    <v-pagination
-      v-if="tabData.total > 0"
-      v-model="page"
-      :length="totalPages"
-      @update:model-value="onPageChange"
-      class="mt-4"
-    />
-
-    <!-- Empty state (no loading + no data) -->
-    <EmptyState
-      v-if="!tabData.loading && tabData.list.length === 0"
-      message="暂无数据"
-    />
+    <div v-if="tabData.total > 0" style="margin-top: 16px">
+      <n-pagination v-model:page="page" :page-count="totalPages" @update:page="onPageChange" />
+    </div>
 
     <!-- Create data source dialog -->
     <DataSourceFormDialog

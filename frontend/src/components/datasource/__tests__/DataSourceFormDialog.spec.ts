@@ -4,6 +4,43 @@ import { createPinia, setActivePinia } from 'pinia'
 import { useDatasourceStore } from '@/stores/datasource'
 import DataSourceFormDialog from '../DataSourceFormDialog.vue'
 
+// Mock naive-ui components that have jsdom-specific issues:
+// - NModal uses <Teleport> which teleports content outside the wrapper
+// - NForm's validate() rejects with missing injection tokens in jsdom
+vi.mock('naive-ui', async (importOriginal) => {
+  const mod = await importOriginal()
+  const { h, defineComponent } = await import('vue')
+
+  const NModalStub = defineComponent({
+    name: 'NModal',
+    props: ['show', 'title'],
+    setup(props: Record<string, any>, { slots }: any) {
+      return () => {
+        if (!props.show) return null
+        return h('div', { class: 'n-modal' }, [
+          props.title ? h('div', { class: 'n-modal-title' }, props.title) : null,
+          ...(slots.default ? slots.default() : []),
+          ...(slots.footer ? slots.footer() : []),
+        ])
+      }
+    },
+  })
+
+  // Stub NForm so formRef.value?.validate() resolves instead of rejecting
+  const NFormStub = defineComponent({
+    name: 'NForm',
+    props: ['model', 'rules'],
+    setup(props: Record<string, any>, { expose, slots }: any) {
+      expose({ validate: () => Promise.resolve() })
+      return () => h('form', { class: 'n-form' }, [
+        ...(slots.default ? slots.default() : []),
+      ])
+    },
+  })
+
+  return { ...(mod as Record<string, unknown>), NModal: NModalStub, NForm: NFormStub }
+})
+
 // Mock the API module
 vi.mock('@/api/datasource', () => ({
   insertHbaseSource: vi.fn().mockResolvedValue({ data: { code: 200 } }),
@@ -20,19 +57,6 @@ vi.mock('@/api/datasource', () => ({
   disableSqlSource: vi.fn().mockResolvedValue({ data: { code: 200 } }),
 }))
 
-const vuetifyStubs = {
-  'v-dialog': { template: '<div class="v-dialog" v-if="modelValue"><slot /></div>', props: ['modelValue'] },
-  'v-card': { template: '<div class="v-card"><slot /></div>' },
-  'v-card-title': { template: '<div class="v-card-title"><slot /></div>' },
-  'v-card-text': { template: '<div class="v-card-text"><slot /></div>' },
-  'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
-  'v-form': { template: '<div class="v-form"><slot /></div>', props: ['ref'] },
-  'v-text-field': { template: '<div class="v-text-field"><span class="v-label">{{ label }}</span><slot /></div>', props: ['modelValue', 'label', 'rules', 'type'], emits: ['update:modelValue'] },
-  'v-select': { template: '<div class="v-select"><span class="v-label">{{ label }}</span><slot /></div>', props: ['modelValue', 'label', 'items', 'rules'], emits: ['update:modelValue'] },
-  'v-btn': { template: '<button class="v-btn" @click="$emit(\'click\')"><slot /></button>', emits: ['click'] },
-  'v-spacer': { template: '<span class="v-spacer" />' },
-}
-
 describe('DataSourceFormDialog.vue', () => {
   let wrapper: VueWrapper
 
@@ -43,7 +67,6 @@ describe('DataSourceFormDialog.vue', () => {
   it('shows HBase form when sourceType is hbase', () => {
     wrapper = mount(DataSourceFormDialog, {
       props: { show: true, sourceType: 'hbase' },
-      global: { stubs: vuetifyStubs },
     })
     expect(wrapper.text()).toContain('HBase')
     expect(wrapper.text()).toContain('HBase 配置路径')
@@ -53,7 +76,6 @@ describe('DataSourceFormDialog.vue', () => {
   it('shows Solr form when sourceType is solr', () => {
     wrapper = mount(DataSourceFormDialog, {
       props: { show: true, sourceType: 'solr' },
-      global: { stubs: vuetifyStubs },
     })
     expect(wrapper.text()).toContain('Solr')
     expect(wrapper.text()).toContain('ZooKeeper 地址')
@@ -63,7 +85,6 @@ describe('DataSourceFormDialog.vue', () => {
   it('shows SQL form when sourceType is sql', () => {
     wrapper = mount(DataSourceFormDialog, {
       props: { show: true, sourceType: 'sql' },
-      global: { stubs: vuetifyStubs },
     })
     expect(wrapper.text()).toContain('SQL')
     expect(wrapper.text()).toContain('数据库类型')
@@ -75,9 +96,8 @@ describe('DataSourceFormDialog.vue', () => {
   it('emits close when cancel is clicked', async () => {
     wrapper = mount(DataSourceFormDialog, {
       props: { show: true, sourceType: 'hbase' },
-      global: { stubs: vuetifyStubs },
     })
-    const cancelBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('取消'))
+    const cancelBtn = wrapper.findAll('button').find(b => b.text().includes('取消'))
     if (cancelBtn) await cancelBtn.trigger('click')
     expect(wrapper.emitted('close')).toBeTruthy()
   })
@@ -88,10 +108,9 @@ describe('DataSourceFormDialog.vue', () => {
 
     wrapper = mount(DataSourceFormDialog, {
       props: { show: true, sourceType: 'hbase' },
-      global: { stubs: vuetifyStubs },
     })
 
-    const confirmBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('确认'))
+    const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
     if (confirmBtn) await confirmBtn.trigger('click')
 
     expect(createSpy).toHaveBeenCalled()

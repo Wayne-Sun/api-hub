@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { NModal, NForm, NFormItem, NInput, NSelect, NButton, type FormInst, type FormRules } from 'naive-ui'
 import { useDatasourceStore } from '@/stores/datasource'
 import type { SourceType, HbaseSourceConf, SolrSourceConf, SqlSourceConf } from '@/types'
 
@@ -15,8 +16,38 @@ const emit = defineEmits<{
 
 const store = useDatasourceStore()
 
-const formRef = ref<any>(null)
+const formRef = ref<FormInst | null>(null)
 const formData = ref<Record<string, any>>({})
+
+const formRules: FormRules = {
+  name: [
+    { required: true, message: '名称为必填项', trigger: ['blur', 'input'] }
+  ],
+  hbaseSitePath: [
+    { required: true, message: '配置路径为必填项', trigger: ['blur', 'input'] }
+  ],
+  coreSitePath: [
+    { required: true, message: '配置路径为必填项', trigger: ['blur', 'input'] }
+  ],
+  zkHosts: [
+    { required: true, message: 'ZooKeeper 地址为必填项', trigger: ['blur', 'input'] }
+  ],
+  zkChroot: [
+    { required: true, message: 'Chroot 路径为必填项', trigger: ['blur', 'input'] }
+  ],
+  dialect: [
+    { required: true, message: '数据库类型为必填项', trigger: ['blur', 'change'] }
+  ],
+  url: [
+    { required: true, message: '连接地址为必填项', trigger: ['blur', 'input'] }
+  ],
+  username: [
+    { required: true, message: '用户名为必填项', trigger: ['blur', 'input'] }
+  ],
+  password: [
+    { required: true, message: '密码为必填项', trigger: ['blur', 'input'] }
+  ]
+}
 
 // Reset form when dialog opens
 watch(() => props.show, (val) => {
@@ -39,11 +70,12 @@ watch(() => props.show, (val) => {
 
 async function onSubmit() {
   try {
+    await formRef.value?.validate()
     await store.createSource(props.sourceType, formData.value as HbaseSourceConf | SolrSourceConf | SqlSourceConf)
     emit('created')
     emit('close')
   } catch {
-    // Error is handled by store
+    // Error is handled by store / validation error caught here
   }
 }
 
@@ -53,41 +85,56 @@ function onCancel() {
 </script>
 
 <template>
-  <v-dialog :model-value="show" max-width="600" @update:model-value="(val: boolean) => !val && emit('close')">
-    <v-card>
-      <v-card-title>{{ sourceType === 'hbase' ? 'HBase' : sourceType === 'solr' ? 'Solr' : 'SQL' }} 数据源</v-card-title>
-      <v-card-text>
-        <v-form ref="formRef">
-          <v-text-field v-model="formData.name" label="名称" :rules="[(v: string) => !!v || '名称为必填项']" required />
+  <n-modal :show="show" preset="card" :title="`${sourceType === 'hbase' ? 'HBase' : sourceType === 'solr' ? 'Solr' : 'SQL'} 数据源`" :style="{ maxWidth: '600px' }" @update:show="(v: boolean) => !v && emit('close')">
+    <n-form ref="formRef" :model="formData" :rules="formRules" label-placement="top">
+      <n-form-item path="name" label="名称">
+        <n-input v-model:value="formData.name" />
+      </n-form-item>
 
-          <v-text-field v-model="formData.comments" label="备注" />
+      <n-form-item path="comments" label="备注">
+        <n-input v-model:value="formData.comments" />
+      </n-form-item>
 
-          <!-- HBase fields -->
-          <template v-if="sourceType === 'hbase'">
-            <v-text-field v-model="formData.hbaseSitePath" label="HBase 配置路径" :rules="[(v: string) => !!v || '配置路径为必填项']" required />
-            <v-text-field v-model="formData.coreSitePath" label="Core 配置路径" :rules="[(v: string) => !!v || '配置路径为必填项']" required />
-          </template>
+      <!-- HBase fields -->
+      <template v-if="sourceType === 'hbase'">
+        <n-form-item path="hbaseSitePath" label="HBase 配置路径">
+          <n-input v-model:value="formData.hbaseSitePath" />
+        </n-form-item>
+        <n-form-item path="coreSitePath" label="Core 配置路径">
+          <n-input v-model:value="formData.coreSitePath" />
+        </n-form-item>
+      </template>
 
-          <!-- Solr fields -->
-          <template v-if="sourceType === 'solr'">
-            <v-text-field v-model="formData.zkHosts" label="ZooKeeper 地址" :rules="[(v: string) => !!v || 'ZooKeeper 地址为必填项']" required />
-            <v-text-field v-model="formData.zkChroot" label="Chroot 路径" :rules="[(v: string) => !!v || 'Chroot 路径为必填项']" required />
-          </template>
+      <!-- Solr fields -->
+      <template v-if="sourceType === 'solr'">
+        <n-form-item path="zkHosts" label="ZooKeeper 地址">
+          <n-input v-model:value="formData.zkHosts" />
+        </n-form-item>
+        <n-form-item path="zkChroot" label="Chroot 路径">
+          <n-input v-model:value="formData.zkChroot" />
+        </n-form-item>
+      </template>
 
-          <!-- SQL fields -->
-          <template v-if="sourceType === 'sql'">
-            <v-select v-model="formData.dialect" label="数据库类型" :items="['MYSQL', 'ORACLE']" :rules="[(v: string) => !!v || '数据库类型为必填项']" required />
-            <v-text-field v-model="formData.url" label="连接地址" :rules="[(v: string) => !!v || '连接地址为必填项']" required />
-            <v-text-field v-model="formData.username" label="用户名" :rules="[(v: string) => !!v || '用户名为必填项']" required />
-            <v-text-field v-model="formData.password" label="密码" type="password" :rules="[(v: string) => !!v || '密码为必填项']" required />
-          </template>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn variant="text" @click="onCancel">取消</v-btn>
-        <v-btn color="primary" variant="text" @click="onSubmit">确认</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+      <!-- SQL fields -->
+      <template v-if="sourceType === 'sql'">
+        <n-form-item path="dialect" label="数据库类型">
+          <n-select v-model:value="formData.dialect" :options="[{ label: 'MYSQL', value: 'MYSQL' }, { label: 'ORACLE', value: 'ORACLE' }]" />
+        </n-form-item>
+        <n-form-item path="url" label="连接地址">
+          <n-input v-model:value="formData.url" />
+        </n-form-item>
+        <n-form-item path="username" label="用户名">
+          <n-input v-model:value="formData.username" />
+        </n-form-item>
+        <n-form-item path="password" label="密码">
+          <n-input v-model:value="formData.password" type="password" />
+        </n-form-item>
+      </template>
+    </n-form>
+    <template #footer>
+      <div style="flex: 1" />
+      <n-button @click="onCancel">取消</n-button>
+      <n-button type="primary" @click="onSubmit">确认</n-button>
+    </template>
+  </n-modal>
 </template>

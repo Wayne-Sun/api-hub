@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useDataapiStore } from '@/stores/dataapi'
@@ -34,53 +35,20 @@ vi.mock('@/api/dataapi', () => ({
   disableSqlApi: vi.fn(),
 }))
 
-// Stub Vuetify components to avoid jsdom rendering issues
+// Stub Naive UI components to avoid jsdom rendering issues
 // Pattern matches App.spec.ts and existing component tests
-const vuetifyStubs = {
-  'v-tabs': {
-    template: '<div class="v-tabs"><slot /></div>',
-    props: ['modelValue'],
-    emits: ['update:modelValue'],
-  },
-  'v-tab': {
-    template: '<button class="v-tab" @click="$emit(\'click\')"><slot /></button>',
-    props: ['value'],
-    emits: ['click'],
-  },
-  'v-data-table': {
-    template: '<div class="v-data-table"><slot /></div>',
-    props: ['headers', 'items', 'hideDefaultFooter'],
-  },
-  'v-pagination': {
-    template: '<div class="v-pagination" />',
-    props: ['modelValue', 'length'],
-    emits: ['update:modelValue'],
-  },
-  'v-progress-linear': {
-    template: '<div class="v-progress-linear" />',
-    props: ['indeterminate', 'color'],
-  },
-  'v-btn': {
-    template: '<button class="v-btn" @click="$emit(\'click\')"><slot /></button>',
-    props: ['icon', 'prependIcon', 'color', 'variant', 'size'],
-    emits: ['click'],
-  },
-  'v-spacer': {
-    template: '<span class="v-spacer" />',
-  },
-  'v-icon': {
-    template: '<span class="v-icon"><slot /></span>',
-    props: ['icon', 'size', 'color'],
-  },
+const naiveStubs = {
+  'n-tabs': { template: '<div class="n-tabs"><slot /></div>', props: ['value'], emits: ['update:value'] },
+  'n-tab': { template: '<button class="n-tab" @click="$emit(\'click\')"><slot /></button>', props: ['name'] },
+  'n-data-table': { template: '<div class="n-data-table"><slot /></div>', props: ['columns', 'data', 'bordered', 'singleLine'] },
+  'n-pagination': { template: '<div class="n-pagination" />', props: ['page', 'pageCount'], emits: ['update:page'] },
+  'n-spin': { template: '<div class="n-spin" :data-show="show"><slot /></div>', props: ['show'] },
+  'n-button': { template: '<button class="n-button" @click="$emit(\'click\')"><slot /></button>', props: ['type', 'size', 'quaternary', 'circle', 'loading'], emits: ['click'] },
+  'n-icon': { template: '<span class="n-icon"><slot /></span>' },
   'ConfirmDialog': {
     template: '<div v-if="show" class="confirm-dialog-stub"><div class="confirm-title">{{ title }}</div><div class="confirm-message">{{ message }}</div><button class="confirm-btn" @click="$emit(\'confirm\')">确认</button><button class="cancel-btn" @click="$emit(\'cancel\')">取消</button></div>',
     props: ['show', 'title', 'message', 'confirmText'],
     emits: ['confirm', 'cancel'],
-  },
-  'v-snackbar': {
-    template: '<div class="v-snackbar" v-if="modelValue"><slot /><slot name="actions" /></div>',
-    props: ['modelValue', 'color', 'timeout'],
-    emits: ['update:modelValue'],
   },
 }
 
@@ -101,7 +69,7 @@ describe('DataApiView.vue', () => {
   function createWrapper() {
     return mount(DataApiView, {
       global: {
-        stubs: vuetifyStubs,
+        stubs: naiveStubs,
       },
     })
   }
@@ -134,44 +102,46 @@ describe('DataApiView.vue', () => {
     expect(wrapper.text()).toContain('SQL')
   })
 
-  it('shows v-progress-linear when tabData.loading is true', () => {
+  it('shows n-spin when tabData.loading is true', () => {
     store.apis = {
       hbase: { list: [], total: 0, loading: true },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-progress-linear').exists()).toBe(true)
+    // Real NSpin renders .n-spin element only when show=true
+    expect(wrapper.find('.n-spin').exists()).toBe(true)
   })
 
-  it('hides v-progress-linear when tabData.loading is false', () => {
+  it('hides n-spin when tabData.loading is false', () => {
     store.apis = {
       hbase: { list: [], total: 0, loading: false },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-progress-linear').exists()).toBe(false)
+    // Real NSpin does not render .n-spin element when show=false
+    expect(wrapper.find('.n-spin').exists()).toBe(false)
   })
 
-  it('shows v-data-table when tabData.list has items', () => {
+  it('shows n-data-table when tabData.list has items', () => {
     store.apis = {
       hbase: { list: [sampleHbaseApi], total: 1, loading: false },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-data-table').exists()).toBe(true)
+    expect(wrapper.find('.n-data-table').exists()).toBe(true)
   })
 
-  it('hides v-data-table when tabData.list is empty', () => {
+  it('hides n-data-table when tabData.list is empty', () => {
     store.apis = {
       hbase: { list: [], total: 0, loading: false },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-data-table').exists()).toBe(false)
+    expect(wrapper.find('.n-data-table').exists()).toBe(false)
   })
 
   it('shows EmptyState when list is empty and not loading', () => {
@@ -184,37 +154,39 @@ describe('DataApiView.vue', () => {
     expect(wrapper.text()).toContain('暂无数据')
   })
 
-  it('shows v-pagination when tabData.total > 0', () => {
+  it('shows n-pagination when tabData.total > 0', () => {
     store.apis = {
       hbase: { list: [sampleHbaseApi], total: 25, loading: false },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-pagination').exists()).toBe(true)
+    expect(wrapper.find('.n-pagination').exists()).toBe(true)
   })
 
-  it('hides v-pagination when tabData.total is 0', () => {
+  it('hides n-pagination when tabData.total is 0', () => {
     store.apis = {
       hbase: { list: [], total: 0, loading: false },
       solr: { list: [], total: 0, loading: false },
       sql: { list: [], total: 0, loading: false },
     }
     wrapper = createWrapper()
-    expect(wrapper.find('.v-pagination').exists()).toBe(false)
+    expect(wrapper.find('.n-pagination').exists()).toBe(false)
   })
 
-  it('calls message.error when store.error is set after mount and clears it', () => {
+  it('calls message.error when store.error is set after mount and clears it', async () => {
     wrapper = createWrapper()
     store.error = '出错了'
+    await nextTick()
     expect(mockMessage.error).toHaveBeenCalledWith('出错了')
     expect(store.error).toBeNull()
   })
 
-  it('does not show error elements when store.error is null', () => {
+  it('does not call message.error when store.error is null', () => {
+    mockMessage.error.mockClear()
     store.error = null
     wrapper = createWrapper()
-    expect(wrapper.find('.v-snackbar').exists()).toBe(false)
+    expect(mockMessage.error).not.toHaveBeenCalled()
   })
 
   describe('initial fetch on mount', () => {

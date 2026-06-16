@@ -4,6 +4,43 @@ import { createPinia, setActivePinia } from 'pinia'
 import { useDataapiStore } from '@/stores/dataapi'
 import DataApiFormDialog from '../DataApiFormDialog.vue'
 
+// Mock naive-ui components that have jsdom-specific issues:
+// - NModal uses <Teleport> which teleports content outside the wrapper
+// - NForm's validate() rejects with missing injection tokens in jsdom
+vi.mock('naive-ui', async (importOriginal) => {
+  const mod = await importOriginal()
+  const { h, defineComponent } = await import('vue')
+
+  const NModalStub = defineComponent({
+    name: 'NModal',
+    props: ['show', 'title'],
+    setup(props: Record<string, any>, { slots }: any) {
+      return () => {
+        if (!props.show) return null
+        return h('div', { class: 'n-modal' }, [
+          props.title ? h('div', { class: 'n-modal-title' }, props.title) : null,
+          ...(slots.default ? slots.default() : []),
+          ...(slots.footer ? slots.footer() : []),
+        ])
+      }
+    },
+  })
+
+  // Stub NForm so formRef.value?.validate() resolves instead of rejecting
+  const NFormStub = defineComponent({
+    name: 'NForm',
+    props: ['model', 'rules'],
+    setup(props: Record<string, any>, { expose, slots }: any) {
+      expose({ validate: () => Promise.resolve() })
+      return () => h('form', { class: 'n-form' }, [
+        ...(slots.default ? slots.default() : []),
+      ])
+    },
+  })
+
+  return { ...(mod as Record<string, unknown>), NModal: NModalStub, NForm: NFormStub }
+})
+
 // Mock the API module to avoid real HTTP calls
 vi.mock('@/api/dataapi', () => ({
   listHbaseApis: vi.fn().mockResolvedValue({ data: { data: { list: [], total: 0 } } }),
@@ -22,42 +59,6 @@ vi.mock('@/api/dataapi', () => ({
   deleteSqlApiParamsByApiId: vi.fn().mockResolvedValue({ data: { code: 200 } }),
 }))
 
-const vuetifyStubs = {
-  'v-dialog': { template: '<div class="v-dialog" v-if="modelValue"><slot /></div>', props: ['modelValue'] },
-  'v-card': { template: '<div class="v-card"><slot /></div>' },
-  'v-card-title': { template: '<div class="v-card-title"><slot /></div>' },
-  'v-card-text': { template: '<div class="v-card-text"><slot /></div>' },
-  'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
-  'v-form': { template: '<form class="v-form"><slot /></form>', props: ['ref'] },
-  'v-text-field': {
-    template: '<div class="v-text-field"><span class="v-label">{{ label }}</span><slot /></div>',
-    props: ['modelValue', 'label', 'rules', 'type', 'density', 'hideDetails'],
-    emits: ['update:modelValue'],
-  },
-  'v-textarea': {
-    template: '<div class="v-textarea"><span class="v-label">{{ label }}</span><slot /></div>',
-    props: ['modelValue', 'label', 'rules'],
-    emits: ['update:modelValue'],
-  },
-  'v-select': {
-    template: '<div class="v-select"><span class="v-label">{{ label }}</span><slot /></div>',
-    props: ['modelValue', 'label', 'items', 'rules', 'itemTitle', 'itemValue', 'density', 'hideDetails'],
-    emits: ['update:modelValue'],
-  },
-  'v-switch': {
-    template: '<div class="v-switch"><span class="v-label">{{ label }}</span><slot /></div>',
-    props: ['modelValue', 'label', 'trueValue', 'falseValue'],
-    emits: ['update:modelValue'],
-  },
-  'v-btn': {
-    template: '<button class="v-btn" @click="$emit(\'click\')"><slot /></button>',
-    props: ['icon', 'prependIcon', 'color', 'variant', 'size'],
-    emits: ['click'],
-  },
-  'v-spacer': { template: '<span class="v-spacer" />' },
-  'v-icon': { template: '<span class="v-icon"><slot /></span>', props: ['icon', 'size', 'color'] },
-}
-
 /**
  * Mount dialog with show:false then switch to show:true.
  * This ensures the `watch` handler fires and initialises formData keys.
@@ -65,7 +66,6 @@ const vuetifyStubs = {
 async function mountDialog(apiType: 'hbase' | 'solr' | 'sql') {
   const w = mount(DataApiFormDialog, {
     props: { show: false, apiType },
-    global: { stubs: vuetifyStubs },
   })
   await w.setProps({ show: true })
   await w.vm.$nextTick()
@@ -139,7 +139,7 @@ describe('DataApiFormDialog.vue', () => {
 
       await wrapper.vm.$nextTick()
 
-      const confirmBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('确认'))
+      const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
       if (confirmBtn) await confirmBtn.trigger('click')
 
       expect(registerSpy).toHaveBeenCalledWith('hbase', {
@@ -170,7 +170,7 @@ describe('DataApiFormDialog.vue', () => {
 
       await wrapper.vm.$nextTick()
 
-      const confirmBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('确认'))
+      const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
       if (confirmBtn) await confirmBtn.trigger('click')
 
       expect(registerSpy).toHaveBeenCalledWith('sql', {
@@ -194,7 +194,7 @@ describe('DataApiFormDialog.vue', () => {
       const vm = wrapper.vm as any
       expect(vm.formData.paramList).toHaveLength(0)
 
-      const addBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('添加参数'))
+      const addBtn = wrapper.findAll('button').find(b => b.text().includes('添加参数'))
       expect(addBtn).toBeTruthy()
       await addBtn!.trigger('click')
 
@@ -239,7 +239,7 @@ describe('DataApiFormDialog.vue', () => {
     it('emits close when cancel is clicked', async () => {
       wrapper = await mountDialog('hbase')
 
-      const cancelBtn = wrapper.findAll('.v-btn').find(b => b.text().includes('取消'))
+      const cancelBtn = wrapper.findAll('button').find(b => b.text().includes('取消'))
       if (cancelBtn) await cancelBtn.trigger('click')
 
       expect(wrapper.emitted('close')).toBeTruthy()
@@ -248,16 +248,14 @@ describe('DataApiFormDialog.vue', () => {
     it('is hidden when show is false', () => {
       wrapper = mount(DataApiFormDialog, {
         props: { show: false, apiType: 'hbase' },
-        global: { stubs: vuetifyStubs },
       })
 
-      expect(wrapper.find('.v-dialog').exists()).toBe(false)
+      expect(wrapper.find('.n-modal').exists()).toBe(false)
     })
 
     it('resets form when show becomes true', async () => {
       wrapper = mount(DataApiFormDialog, {
         props: { show: false, apiType: 'sql' },
-        global: { stubs: vuetifyStubs },
       })
 
       // Set some data while hidden
@@ -280,36 +278,22 @@ describe('DataApiFormDialog.vue', () => {
   describe('required field validation', () => {
     it('has validation rules on name field', async () => {
       wrapper = await mountDialog('hbase')
-
-      const textFieldStubs = wrapper.findAllComponents({ name: 'VTextField' })
-      const nameField = textFieldStubs.find(s => s.props('label') === '名称')
-      // If stub found by name, check its rules prop
-      if (nameField) {
-        const rules = nameField.props('rules') as Array<(v: string) => string | boolean>
-        expect(rules).toBeTruthy()
-        expect(rules).toHaveLength(1)
-        expect(rules[0]?.('')).toBe('名称为必填项')
-      } else {
-        // Fallback: DOM-based check
-        const nameDiv = wrapper.findAll('.v-text-field').find(d => d.text().includes('名称'))
-        expect(nameDiv).toBeTruthy()
-      }
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.name).toBeTruthy()
+      expect(rules.name[0]?.required).toBe(true)
+      expect(rules.name[0]?.message).toBe('名称为必填项')
     })
 
     it('has validation rules on dataSourceId field', async () => {
       wrapper = await mountDialog('hbase')
-
-      const textFieldStubs = wrapper.findAllComponents({ name: 'VTextField' })
-      const dsIdField = textFieldStubs.find(s => s.props('label') === '数据源 ID')
-      if (dsIdField) {
-        const rules = dsIdField.props('rules') as Array<(v: string) => string | boolean>
-        expect(rules).toBeTruthy()
-        expect(rules).toHaveLength(1)
-        expect(rules[0]?.('')).toBe('数据源 ID 为必填项')
-      } else {
-        const dsDiv = wrapper.findAll('.v-text-field').find(d => d.text().includes('数据源 ID'))
-        expect(dsDiv).toBeTruthy()
-      }
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.dataSourceId).toBeTruthy()
+      expect(rules.dataSourceId[0]?.required).toBe(true)
+      expect(rules.dataSourceId[0]?.message).toBe('数据源 ID 为必填项')
     })
   })
 })
