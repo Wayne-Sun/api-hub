@@ -43,7 +43,7 @@ public class SolrQueryController {
 
     @Operation(description = "Solr API query", method = "POST")
     @PostMapping("/solr")
-    public BaseResponse query(@ModelAttribute @RequestBody SolrQueryRequest solrQueryRequest) {
+    public BaseResponse query(@RequestBody SolrQueryRequest solrQueryRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = solrQueryHandler.handle(solrQueryRequest);

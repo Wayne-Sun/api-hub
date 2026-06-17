@@ -46,7 +46,7 @@ public class SolrSourceController {
 
     @Operation(description = "Register Solr data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@ModelAttribute @RequestBody SolrSourceConf solrSourceInfo) {
+    public BaseResponse insertSource(@RequestBody SolrSourceConf solrSourceInfo) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertSolrSourceConf(solrSourceInfo);
@@ -60,7 +60,7 @@ public class SolrSourceController {
 
     @Operation(description = "List Solr data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listSolrSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -74,7 +74,7 @@ public class SolrSourceController {
 
     @Operation(description = "Initialize Solr data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse initSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             solrClientFactory.initClient(hbaseSourceInfo);

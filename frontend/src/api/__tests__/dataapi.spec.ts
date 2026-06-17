@@ -25,10 +25,10 @@ describe('dataapi API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/api/hbase/registerApi', conf);
     });
 
-    it('listHbaseApis should GET /v1/api/hbase/listApi with params', () => {
+    it('listHbaseApis should POST to /v1/api/hbase/listApi', () => {
       const req = { pageNum: 1, pageSize: 10 };
       dataapi.listHbaseApis(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/api/hbase/listApi', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/api/hbase/listApi', req);
     });
 
     it('enableHbaseApi should GET /v1/api/hbase/enableApi with id', () => {
@@ -49,10 +49,10 @@ describe('dataapi API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/api/solr/registerApi', conf);
     });
 
-    it('listSolrApis should GET /v1/api/solr/listApi with params', () => {
+    it('listSolrApis should POST to /v1/api/solr/listApi', () => {
       const req = { pageNum: 1, pageSize: 20 };
       dataapi.listSolrApis(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/api/solr/listApi', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/api/solr/listApi', req);
     });
 
     it('enableSolrApi should GET /v1/api/solr/enableApi with id', () => {
@@ -73,10 +73,10 @@ describe('dataapi API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/api/sql/registerApi', conf);
     });
 
-    it('listSqlApis should GET /v1/api/sql/listApi with params', () => {
+    it('listSqlApis should POST to /v1/api/sql/listApi', () => {
       const req = { pageNum: 1, pageSize: 15 };
       dataapi.listSqlApis(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/api/sql/listApi', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/api/sql/listApi', req);
     });
 
     it('enableSqlApi should GET /v1/api/sql/enableApi with id', () => {

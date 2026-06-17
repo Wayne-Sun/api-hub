@@ -45,7 +45,7 @@ public class SolrApiController {
 
     @Operation(description = "Register Solr API", method = "POST")
     @PostMapping("/registerApi")
-    public BaseResponse registerApi(@ModelAttribute @RequestBody SolrApiConf solrApiInfo) {
+    public BaseResponse registerApi(@RequestBody SolrApiConf solrApiInfo) {
         BaseResponse baseResponse;
         try {
             solrApiHandlerFactory.registerApi(solrApiInfo);
@@ -60,7 +60,7 @@ public class SolrApiController {
 
     @Operation(description = "List Solr API Configuration", method = "POST")
     @PostMapping("/listApi")
-    public BaseResponse listApi(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listApi(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataApiConfService.listSolrApiConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());

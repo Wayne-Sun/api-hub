@@ -40,16 +40,18 @@ limitations under the License.
         #{hbaseApiConf.status,jdbcType=NUMERIC},#{hbaseApiConf.createTime,jdbcType=TIMESTAMP},#{hbaseApiConf.createBy,jdbcType=VARCHAR})
     </insert>
     <select id="listHbaseApi" resultMap="HbaseApiConfMap">
-        SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase ORDER BY id ASC
+        SELECT id,data_source_id,name,comments,type,table_name,`columns`,status,create_time,create_by,update_time,update_by
+        FROM api_hub.data_api_hbase ORDER BY id ASC
     </select>
     <select id="getHbaseApiById" resultMap="HbaseApiConfMap" parameterType="java.lang.Long">
-        SELECT id,data_source_id,name,comments,type,table_name,columns FROM api_hub.data_api_hbase WHERE id = #{id}
+        SELECT id,data_source_id,name,comments,type,table_name,`columns`,status,create_time,create_by,update_time,update_by
+        FROM api_hub.data_api_hbase WHERE id = #{id}
     </select>
     <update id="updateHbaseApiStatus">
         UPDATE api_hub.data_api_hbase
         <set>
-            status = #{status}
-            update_time = #{updateTime,jdbcType=TIMESTAMP}
+            status = #{status},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
             update_by = #{updateBy}
         </set>
         WHERE id = #{id}

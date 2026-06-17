@@ -26,7 +26,9 @@ import com.wayne.apihub.modules.dataapi.conf.SolrApiConf;
 import com.wayne.apihub.modules.dataapi.conf.SqlApiConf;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Wayne
@@ -53,7 +55,7 @@ public class DataApiConfService {
 
     public BaseResponse listHbaseApiConfs(Integer pageNum, Integer pageSize) {
         Page<HbaseApiConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataApiHbaseDao::listHbaseApi);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public List<HbaseApiConf> listHbaseApiConfs() {
@@ -81,7 +83,7 @@ public class DataApiConfService {
 
     public BaseResponse listSolrApiConfs(Integer pageNum, Integer pageSize) {
         Page<SolrApiConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataApiSolrDao::listSolrApi);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public List<SolrApiConf> listSolrApiConfs() {
@@ -114,7 +116,7 @@ public class DataApiConfService {
 
     public BaseResponse listSqlApiConfs(Integer pageNum, Integer pageSize) {
         Page<SqlApiConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataApiSqlDao::listSqlApi);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public SqlApiConf getSqlApiConfById(Long id) {
@@ -135,5 +137,19 @@ public class DataApiConfService {
 
     public void deleteApiParamByApiId(Long apiId) {
         dataApiSqlDao.deleteApiParamByApiId(apiId);
+    }
+
+    /**
+     * Converts a PageHelper Page to { list, total, pages, pageNum, pageSize } map
+     * for proper JSON serialization as a paginated result object.
+     */
+    private Map<String, Object> toPageData(Page<?> page) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", page.getResult());
+        data.put("total", page.getTotal());
+        data.put("pages", page.getPages());
+        data.put("pageNum", page.getPageNum());
+        data.put("pageSize", page.getPageSize());
+        return data;
     }
 }

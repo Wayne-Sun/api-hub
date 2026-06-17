@@ -8,7 +8,7 @@ export function insertHbaseSource(conf: HbaseSourceConf): Promise<{ data: BaseRe
 }
 
 export function listHbaseSources(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<HbaseSourceConf>> }> {
-  return apiClient.get('/v1/source/hbase/listSource', { params: req });
+  return apiClient.post('/v1/source/hbase/listSource', req);
 }
 
 export function enableHbaseSource(id: number): Promise<{ data: BaseResponse }> {
@@ -25,7 +25,7 @@ export function insertSolrSource(conf: SolrSourceConf): Promise<{ data: BaseResp
 }
 
 export function listSolrSources(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<SolrSourceConf>> }> {
-  return apiClient.get('/v1/source/solr/listSource', { params: req });
+  return apiClient.post('/v1/source/solr/listSource', req);
 }
 
 export function enableSolrSource(id: number): Promise<{ data: BaseResponse }> {
@@ -42,7 +42,7 @@ export function insertSqlSource(conf: SqlSourceConf): Promise<{ data: BaseRespon
 }
 
 export function listSqlSources(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<SqlSourceConf>> }> {
-  return apiClient.get('/v1/source/sql/listSource', { params: req });
+  return apiClient.post('/v1/source/sql/listSource', req);
 }
 
 export function enableSqlSource(id: number): Promise<{ data: BaseResponse }> {

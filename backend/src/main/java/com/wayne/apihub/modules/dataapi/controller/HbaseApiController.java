@@ -45,7 +45,7 @@ public class HbaseApiController {
 
     @Operation(summary = "Register Hbase API", method = "POST")
     @PostMapping("/registerApi")
-    public BaseResponse registerApi(@ModelAttribute @RequestBody HbaseApiConf hbaseApiConf) {
+    public BaseResponse registerApi(@RequestBody HbaseApiConf hbaseApiConf) {
         BaseResponse baseResponse;
         try {
             hbaseApiHandlerFactory.registerApi(hbaseApiConf);
@@ -60,7 +60,7 @@ public class HbaseApiController {
 
     @Operation(summary = "List Hbase API Configuration", method = "POST")
     @PostMapping("/listApi")
-    public BaseResponse listApi(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listApi(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataApiConfService.listHbaseApiConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());

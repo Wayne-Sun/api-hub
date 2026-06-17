@@ -26,10 +26,10 @@ describe('datasource API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/source/hbase/insertSource', conf);
     });
 
-    it('listHbaseSources should GET /v1/source/hbase/listSource with params', () => {
+    it('listHbaseSources should POST to /v1/source/hbase/listSource', () => {
       const req = { pageNum: 1, pageSize: 10 };
       datasource.listHbaseSources(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/source/hbase/listSource', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/source/hbase/listSource', req);
     });
 
     it('enableHbaseSource should GET /v1/source/hbase/enableSource with id', () => {
@@ -50,10 +50,10 @@ describe('datasource API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/source/solr/insertSource', conf);
     });
 
-    it('listSolrSources should GET /v1/source/solr/listSource with params', () => {
+    it('listSolrSources should POST to /v1/source/solr/listSource', () => {
       const req = { pageNum: 1, pageSize: 20 };
       datasource.listSolrSources(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/source/solr/listSource', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/source/solr/listSource', req);
     });
 
     it('enableSolrSource should GET /v1/source/solr/enableSource with id', () => {
@@ -74,10 +74,10 @@ describe('datasource API', () => {
       expect(mockPost).toHaveBeenCalledWith('/v1/source/sql/insertSource', conf);
     });
 
-    it('listSqlSources should GET /v1/source/sql/listSource with params', () => {
+    it('listSqlSources should POST to /v1/source/sql/listSource', () => {
       const req = { pageNum: 2, pageSize: 15 };
       datasource.listSqlSources(req);
-      expect(mockGet).toHaveBeenCalledWith('/v1/source/sql/listSource', { params: req });
+      expect(mockPost).toHaveBeenCalledWith('/v1/source/sql/listSource', req);
     });
 
     it('enableSqlSource should GET /v1/source/sql/enableSource with id', () => {

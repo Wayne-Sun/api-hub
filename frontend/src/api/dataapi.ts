@@ -8,7 +8,7 @@ export function registerHbaseApi(conf: HbaseApiConf): Promise<{ data: BaseRespon
 }
 
 export function listHbaseApis(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<HbaseApiConf>> }> {
-  return apiClient.get('/v1/api/hbase/listApi', { params: req });
+  return apiClient.post('/v1/api/hbase/listApi', req);
 }
 
 export function enableHbaseApi(id: number): Promise<{ data: BaseResponse }> {
@@ -25,7 +25,7 @@ export function registerSolrApi(conf: SolrApiConf): Promise<{ data: BaseResponse
 }
 
 export function listSolrApis(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<SolrApiConf>> }> {
-  return apiClient.get('/v1/api/solr/listApi', { params: req });
+  return apiClient.post('/v1/api/solr/listApi', req);
 }
 
 export function enableSolrApi(id: number): Promise<{ data: BaseResponse }> {
@@ -42,7 +42,7 @@ export function registerSqlApi(conf: SqlApiConf): Promise<{ data: BaseResponse }
 }
 
 export function listSqlApis(req: BasePageRequest): Promise<{ data: BaseResponse<PageData<SqlApiConf>> }> {
-  return apiClient.get('/v1/api/sql/listApi', { params: req });
+  return apiClient.post('/v1/api/sql/listApi', req);
 }
 
 export function enableSqlApi(id: number): Promise<{ data: BaseResponse }> {

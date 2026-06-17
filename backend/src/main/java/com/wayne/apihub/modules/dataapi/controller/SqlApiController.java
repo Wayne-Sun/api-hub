@@ -45,7 +45,7 @@ public class SqlApiController {
 
     @Operation(description = "Register sql API", method = "POST")
     @PostMapping("/registerApi")
-    public BaseResponse registerApi(@ModelAttribute @RequestBody SqlApiConf sqlApiConf) {
+    public BaseResponse registerApi(@RequestBody SqlApiConf sqlApiConf) {
         BaseResponse baseResponse;
         try {
             sqlApiHandlerFactory.registerApi(sqlApiConf);
@@ -60,7 +60,7 @@ public class SqlApiController {
 
     @Operation(description = "List sql API Configuration", method = "POST")
     @PostMapping("/listApi")
-    public BaseResponse listApi(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listApi(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataApiConfService.listSqlApiConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());

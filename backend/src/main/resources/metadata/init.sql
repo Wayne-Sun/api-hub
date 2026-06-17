@@ -19,22 +19,6 @@ create table api_hub.data_source_hbase
     `update_by`       varchar(128)
 );
 
-drop table if exists api_hub.data_source_mysql;
-create table api_hub.data_source_mysql
-(
-    `id`          serial,
-    `name`        varchar(128) not null,
-    `comments`    varchar(256)          default null,
-    `url`         varchar(256) not null,
-    `username`    varchar(128) not null,
-    `password`    varchar(128) not null,
-    `status`      int                   default 1,
-    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `create_by`   varchar(128),
-    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `update_by`   varchar(128)
-);
-
 drop table if exists api_hub.data_source_solr;
 create table api_hub.data_source_solr
 (
@@ -42,7 +26,7 @@ create table api_hub.data_source_solr
     `name`        varchar(128) not null,
     `comments`    varchar(256)          default null,
     `zk_hosts`    varchar(256) not null,
-    `zk_chroots`  varchar(128) not null,
+    `zk_chroot`  varchar(128) not null,
     `status`      int                   default 1,
     `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `create_by`   varchar(128),
@@ -83,26 +67,6 @@ create table api_hub.data_api_hbase
     `create_by`      varchar(128),
     `update_time`    timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `update_by`      varchar(128)
-);
-
-drop table if exists api_hub.data_api_mysql;
-create table api_hub.data_api_mysql
-(
-    `id`              serial,
-    `data_source_id`  bigint        not null,
-    `name`            varchar(128)  not null,
-    `comments`        varchar(256)           default null,
-    `database_name`   varchar(256)  not null,
-    `table_name`      varchar(256)  not null,
-    `columns`         varchar(1024) not null,
-    `conditions`      varchar(256),
-    `condition_types` varchar(256),
-    `orders`          varchar(256),
-    `status`          int                    default 1,
-    `create_time`     timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `create_by`       varchar(128),
-    `update_time`     timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `update_by`       varchar(128)
 );
 
 drop table if exists api_hub.data_api_solr;

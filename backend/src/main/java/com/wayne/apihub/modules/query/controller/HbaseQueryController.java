@@ -42,7 +42,7 @@ public class HbaseQueryController {
 
     @Operation(description = "Hbase API query", method = "POST")
     @PostMapping("/hbase")
-    public BaseResponse query(@ModelAttribute @RequestBody HbaseQueryRequest hbaseQueryRequest) {
+    public BaseResponse query(@RequestBody HbaseQueryRequest hbaseQueryRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = hbaseQueryHandler.handle(hbaseQueryRequest);

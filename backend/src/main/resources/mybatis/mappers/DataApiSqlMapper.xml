@@ -30,7 +30,7 @@ limitations under the License.
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
         <result column="update_by" property="updateBy"/>
     </resultMap>
-    <resultMap id="sqlParamMap" type="com.wayne.apihub.modules.common.entity.SqlParam">
+    <resultMap id="sqlParamMap" type="com.wayne.apihub.modules.query.sql.SqlParam">
         <id column="id" property="id"/>
         <result column="api_id" property="apiId"/>
         <result column="name" property="name"/>
@@ -50,9 +50,9 @@ limitations under the License.
         #{sqlApiConf.sql,jdbcType=LONGVARCHAR},#{sqlApiConf.pageTag,jdbcType=NUMERIC},#{sqlApiConf.pageSize,jdbcType=NUMERIC},
         #{sqlApiConf.status,jdbcType=NUMERIC},#{sqlApiConf.createTime,jdbcType=TIMESTAMP},#{sqlApiConf.createBy,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSqlParam" parameterType="com.wayne.apihub.modules.common.entity.SqlParam"
+    <insert id="insertSqlParam"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        INSERT INTO api_hub.data_api_sql_param (api_id,name,type,description,status,create_time,create_by)
+        INSERT INTO api_hub.data_api_sql_param (api_id,name,`type`,description,status,create_time,create_by)
         <foreach collection="paramList" item="param" separator=",">
             (#{param.apiId,jdbcType=NUMERIC},#{param.name,jdbcType=VARCHAR},#{param.type,jdbcType=VARCHAR},#{param.description,jdbcType=VARCHAR},
             #{param.status,jdbcType=NUMERIC},#{param.createTime,jdbcType=TIMESTAMP},#{param.createBy,jdbcType=VARCHAR})
@@ -67,14 +67,14 @@ limitations under the License.
         FROM api_hub.data_api_sql WHERE id = #{id}
     </select>
     <select id="listApiParamByApiId" resultMap="sqlParamMap" parameterType="java.lang.Long">
-        SELECT id,api_id,name,type,description,status,create_time,create_by FROM api_hub.data_api_sql_param
+        SELECT id,api_id,name,`type`,description,status,create_time,create_by FROM api_hub.data_api_sql_param
         WHERE api_id = #{apiId}
     </select>
     <update id="updateSqlApiStatus">
         UPDATE api_hub.data_api_sql
         <set>
-            status = #{status}
-            update_time = #{updateTime,jdbcType=TIMESTAMP}
+            status = #{status},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
             update_by = #{updateBy}
         </set>
         WHERE id = #{id}

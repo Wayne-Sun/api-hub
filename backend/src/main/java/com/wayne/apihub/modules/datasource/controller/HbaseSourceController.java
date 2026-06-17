@@ -45,7 +45,7 @@ public class HbaseSourceController {
 
     @Operation(description = "Register Hbase data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse insertSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertHbaseSourceConf(hbaseSourceInfo);
@@ -59,7 +59,7 @@ public class HbaseSourceController {
 
     @Operation(description = "List Hbase data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listHbaseSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -73,7 +73,7 @@ public class HbaseSourceController {
 
     @Operation(description = "Initialize Hbase data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@ModelAttribute @RequestBody HbaseSourceConf hbaseSourceInfo) {
+    public BaseResponse initSource(@RequestBody HbaseSourceConf hbaseSourceInfo) {
         BaseResponse baseResponse;
         try {
             hbaseClientFactory.initClient(hbaseSourceInfo);

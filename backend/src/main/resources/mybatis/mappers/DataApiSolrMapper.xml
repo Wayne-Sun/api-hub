@@ -42,16 +42,18 @@ limitations under the License.
         #{solrApiConf.createBy,jdbcType=VARCHAR})
     </insert>
     <select id="listSolrApi" resultMap="solrApiConfMap">
-        SELECT id,name,comments,collection,fields,conditions,orders FROM api_hub.data_api_solr ORDER BY id ASC
+        SELECT id,data_source_id,name,comments,collection,fields,conditions,orders,status,create_time,create_by,update_time,update_by
+        FROM api_hub.data_api_solr ORDER BY id ASC
     </select>
     <select id="getSolrApiById" resultMap="solrApiConfMap" parameterType="java.lang.Long">
-        SELECT id,name,comments,collection,fields,conditions,orders FROM api_hub.data_api_solr WHERE id = #{id}
+        SELECT id,data_source_id,name,comments,collection,fields,conditions,orders,status,create_time,create_by,update_time,update_by
+        FROM api_hub.data_api_solr WHERE id = #{id}
     </select>
     <update id="updateSolrApiStatus">
         UPDATE api_hub.data_api_solr
         <set>
-            status = #{status}
-            update_time = #{updateTime,jdbcType=TIMESTAMP}
+            status = #{status},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
             update_by = #{updateBy}
         </set>
         WHERE id = #{id}

@@ -45,7 +45,7 @@ public class SqlSourceController {
 
     @Operation(description = "Register sql data source", method = "POST")
     @PostMapping("/insertSource")
-    public BaseResponse insertSource(@ModelAttribute @RequestBody SqlSourceConf sqlSourceConf) {
+    public BaseResponse insertSource(@RequestBody SqlSourceConf sqlSourceConf) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.insertSqlSourceConf(sqlSourceConf);
@@ -59,7 +59,7 @@ public class SqlSourceController {
 
     @Operation(description = "List sql data source", method = "POST")
     @PostMapping("/listSource")
-    public BaseResponse listSource(@ModelAttribute @RequestBody BasePageRequest basePageRequest) {
+    public BaseResponse listSource(@RequestBody BasePageRequest basePageRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = dataSourceConfService.listSqlSourceConfs(basePageRequest.getPageNum(), basePageRequest.getPageSize());
@@ -73,7 +73,7 @@ public class SqlSourceController {
 
     @Operation(description = "Initialize Mysql data source", method = "POST")
     @PostMapping("/initSource")
-    public BaseResponse initSource(@ModelAttribute @RequestBody SqlSourceConf sqlSourceConf) {
+    public BaseResponse initSource(@RequestBody SqlSourceConf sqlSourceConf) {
         BaseResponse baseResponse;
         try {
             sqlClientFactory.initClient(sqlSourceConf);

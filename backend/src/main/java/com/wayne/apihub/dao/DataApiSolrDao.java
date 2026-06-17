@@ -31,7 +31,7 @@ public interface DataApiSolrDao {
      *
      * @param solrApiConf SolrApiConf
      */
-    void insertSolrApi(@Param("solrApiInfo") SolrApiConf solrApiConf);
+    void insertSolrApi(@Param("solrApiConf") SolrApiConf solrApiConf);
 
     /**
      * list Solr API configuration

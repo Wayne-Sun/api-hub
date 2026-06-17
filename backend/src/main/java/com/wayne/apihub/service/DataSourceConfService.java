@@ -26,7 +26,9 @@ import com.wayne.apihub.modules.datasource.conf.SolrSourceConf;
 import com.wayne.apihub.modules.datasource.conf.SqlSourceConf;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Wayne
@@ -54,7 +56,7 @@ public class DataSourceConfService {
 
     public BaseResponse listHbaseSourceConfs(Integer pageNum, Integer pageSize) {
         Page<HbaseSourceConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataSourceHbaseDao::listHbaseSource);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public List<HbaseSourceConf> listHbaseSourceConfs() {
@@ -79,7 +81,7 @@ public class DataSourceConfService {
 
     public BaseResponse listSolrSourceConfs(Integer pageNum, Integer pageSize) {
         Page<SolrSourceConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataSourceSolrDao::listSolrSource);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public List<SolrSourceConf> listSolrSourceConfs() {
@@ -104,7 +106,7 @@ public class DataSourceConfService {
 
     public BaseResponse listSqlSourceConfs(Integer pageNum, Integer pageSize) {
         Page<SqlSourceConf> page = PageHelper.startPage(pageNum, pageSize).doSelectPage(dataSourceSqlDao::listSqlSource);
-        return BaseResponse.ok(page);
+        return BaseResponse.ok(toPageData(page));
     }
 
     public List<SqlSourceConf> listSqlSourceConfs() {
@@ -117,5 +119,19 @@ public class DataSourceConfService {
 
     public void updateSqlSourceConfStatus(Long id, Integer status) {
         dataSourceSqlDao.updateSqlSourceStatus(id, status);
+    }
+
+    /**
+     * Converts a PageHelper Page to { list, total, pages, pageNum, pageSize } map
+     * for proper JSON serialization as a paginated result object.
+     */
+    private Map<String, Object> toPageData(Page<?> page) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("list", page.getResult());
+        data.put("total", page.getTotal());
+        data.put("pages", page.getPages());
+        data.put("pageNum", page.getPageNum());
+        data.put("pageSize", page.getPageSize());
+        return data;
     }
 }

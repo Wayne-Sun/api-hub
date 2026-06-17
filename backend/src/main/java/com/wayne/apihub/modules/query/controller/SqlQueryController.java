@@ -42,7 +42,7 @@ public class SqlQueryController {
 
     @Operation(description = "Sql API query", method = "POST")
     @PostMapping("/sql")
-    public BaseResponse query(@ModelAttribute @RequestBody SqlQueryRequest sqlQueryRequest) {
+    public BaseResponse query(@RequestBody SqlQueryRequest sqlQueryRequest) {
         BaseResponse baseResponse;
         try {
             baseResponse = sqlQueryHandler.handle(sqlQueryRequest);
