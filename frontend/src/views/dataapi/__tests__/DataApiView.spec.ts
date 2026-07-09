@@ -6,6 +6,8 @@ import { useDataapiStore } from '@/stores/dataapi'
 import { useAppStore } from '@/stores/app'
 import DataApiView from '../DataApiView.vue'
 import type { HbaseApiConf } from '@/types'
+import type { Mock } from 'vitest'
+import * as dataapiApi from '@/api/dataapi'
 
 // Shared mock message for verifying naive-ui error display
 const mockMessage = vi.hoisted(() => ({ error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() }))
@@ -189,6 +191,31 @@ describe('DataApiView.vue', () => {
     expect(mockMessage.error).not.toHaveBeenCalled()
   })
 
+  it('renders 注册 button that opens form dialog', async () => {
+    wrapper = createWrapper()
+    // The 注册 button is the first n-button
+    await wrapper.find('.n-button').trigger('click')
+
+    const dialog = wrapper.findComponent({ name: 'DataApiFormDialog' })
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.props('show')).toBe(true)
+  })
+
+  it('closes form dialog when close event is emitted', async () => {
+    wrapper = createWrapper()
+    // Open dialog first
+    await wrapper.find('.n-button').trigger('click')
+    let dialog = wrapper.findComponent({ name: 'DataApiFormDialog' })
+    expect(dialog.props('show')).toBe(true)
+
+    // Emit close event — triggers @close="showRegisterDialog = false"
+    dialog.vm.$emit('close')
+    await wrapper.vm.$nextTick()
+
+    dialog = wrapper.findComponent({ name: 'DataApiFormDialog' })
+    expect(dialog.props('show')).toBe(false)
+  })
+
   describe('initial fetch on mount', () => {
     it('calls fetchApis with activeTab and page on mount', () => {
       // For this test only, restore the original fetchApis
@@ -295,6 +322,112 @@ describe('DataApiView.vue', () => {
 
       await promise
       expect(vm.actionLoading).toBe(false)
+    })
+
+    it('shows specific error message from DataApiException in snackbar', async () => {
+      wrapper = createWrapper()
+      const vm = wrapper.vm as any
+      const errorMsg = 'connection refused'
+      // Mock the underlying API so the store's error-handling logic runs
+      const enableHbaseMock = dataapiApi.enableHbaseApi as Mock
+      const disableHbaseMock = dataapiApi.disableHbaseApi as Mock
+      enableHbaseMock.mockRejectedValue(new Error(errorMsg))
+      disableHbaseMock.mockRejectedValue(new Error(errorMsg))
+
+      vm.onToggle('hbase', 1, '测试 API')
+      await vm.handleConfirm()
+      // The store.error watcher fires after nextTick
+      await nextTick()
+
+      // Both fail → snackbar shows '操作失败'
+      expect(snackbarSpy).toHaveBeenCalledWith('操作失败', 'error')
+      // The store sets error from the thrown exception → watcher fires → message.error
+      expect(mockMessage.error).toHaveBeenCalledWith(errorMsg)
+      expect(vm.confirmDialog.show).toBe(false)
+      expect(vm.actionLoading).toBe(false)
+    })
+
+    it('reset actionLoading when both enable and disable fail', async () => {
+      wrapper = createWrapper()
+      const vm = wrapper.vm as any
+      vi.spyOn(store, 'enableApi').mockRejectedValueOnce(new Error('error'))
+      vi.spyOn(store, 'disableApi').mockRejectedValueOnce(new Error('error'))
+
+      vm.onToggle('hbase', 1, '测试 API')
+      const promise = vm.handleConfirm()
+      expect(vm.actionLoading).toBe(true)
+      await promise
+      expect(vm.actionLoading).toBe(false)
+    })
+  })
+
+  describe('tab switching', () => {
+    it('switches active tab when tab is clicked', async () => {
+      wrapper = createWrapper()
+      const setupState = (wrapper.vm as any).$.setupState
+
+      // Verify initial apiType
+      expect(setupState.activeTab).toBe('hbase')
+      expect(wrapper.findComponent({ name: 'DataApiFormDialog' }).props('apiType')).toBe('hbase')
+
+      // Mutate the internal ref to simulate tab switch
+      setupState.activeTab = 'solr'
+      await wrapper.vm.$nextTick()
+
+      // The DataApiFormDialog's apiType prop should follow activeTab
+      expect(wrapper.findComponent({ name: 'DataApiFormDialog' }).props('apiType')).toBe('solr')
+    })
+
+    it('fetches data for the new tab when switched', async () => {
+      const fetchSpy = vi.spyOn(store, 'fetchApis').mockResolvedValue()
+      wrapper = createWrapper()
+      fetchSpy.mockClear() // remove the initial onMounted call
+
+      const setupState = (wrapper.vm as any).$.setupState
+      setupState.activeTab = 'solr'
+      await wrapper.vm.$nextTick()
+
+      // The watch([activeTab, page]) should trigger fetchApis with the new tab
+      expect(fetchSpy).toHaveBeenCalledWith('solr', 1)
+    })
+  })
+
+  describe('pagination', () => {
+    it('calls fetchApis with new page when pagination changes', async () => {
+      // Set total > 0 so n-pagination is rendered
+      store.apis = {
+        hbase: { list: [sampleHbaseApi], total: 25, loading: false },
+        solr: { list: [], total: 0, loading: false },
+        sql: { list: [], total: 0, loading: false },
+      }
+      const fetchSpy = vi.spyOn(store, 'fetchApis').mockResolvedValue()
+      wrapper = createWrapper()
+      fetchSpy.mockClear()
+
+      const setupState = (wrapper.vm as any).$.setupState
+      setupState.page = 2
+      await wrapper.vm.$nextTick()
+
+      // The watch([activeTab, page]) should trigger fetchApis with the new page
+      expect(fetchSpy).toHaveBeenCalledWith('hbase', 2)
+    })
+  })
+
+  describe('form dialog', () => {
+    it('opens DataApiFormDialog when 注册 button is clicked', async () => {
+      wrapper = createWrapper()
+      const dialog = wrapper.findComponent({ name: 'DataApiFormDialog' })
+      expect(dialog.props('show')).toBe(false)
+
+      await wrapper.find('.n-button').trigger('click')
+
+      expect(dialog.props('show')).toBe(true)
+    })
+
+    it('passes activeTab as apiType to DataApiFormDialog', () => {
+      wrapper = createWrapper()
+      const dialog = wrapper.findComponent({ name: 'DataApiFormDialog' })
+      expect(dialog.props('apiType')).toBe('hbase')
     })
   })
 })

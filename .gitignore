@@ -36,6 +36,7 @@ frontend/*.local
 # Vitest
 __screenshots__/
 
-# OMO
+# AGENTS & MCP
 .omo/
 .playwright-mcp/
+.codegraph/

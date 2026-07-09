@@ -31,7 +31,15 @@ vi.mock('naive-ui', async (importOriginal) => {
     name: 'NForm',
     props: ['model', 'rules'],
     setup(props: Record<string, any>, { expose, slots }: any) {
-      expose({ validate: () => Promise.resolve() })
+      expose({
+        validate: () => {
+          // Reject if model has no 'name' field or it's empty (simulates required validation)
+          if (!props.model || !props.model.name) {
+            return Promise.reject(new Error('name is required'))
+          }
+          return Promise.resolve()
+        },
+      })
       return () => h('form', { class: 'n-form' }, [
         ...(slots.default ? slots.default() : []),
       ])
@@ -56,6 +64,19 @@ vi.mock('@/api/datasource', () => ({
   disableSolrSource: vi.fn().mockResolvedValue({ data: { code: 200 } }),
   disableSqlSource: vi.fn().mockResolvedValue({ data: { code: 200 } }),
 }))
+
+/**
+ * Mount dialog with show:false then switch to show:true.
+ * This ensures the `watch` handler fires and initialises formData keys.
+ */
+async function mountSourceDialog(sourceType: 'hbase' | 'solr' | 'sql') {
+  const w = mount(DataSourceFormDialog, {
+    props: { show: false, sourceType },
+  })
+  await w.setProps({ show: true })
+  await w.vm.$nextTick()
+  return w
+}
 
 describe('DataSourceFormDialog.vue', () => {
   let wrapper: VueWrapper
@@ -110,9 +131,147 @@ describe('DataSourceFormDialog.vue', () => {
       props: { show: true, sourceType: 'hbase' },
     })
 
+    const vm = wrapper.vm as any
+    vm.formData.name = 'test-source'
+
     const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
     if (confirmBtn) await confirmBtn.trigger('click')
 
     expect(createSpy).toHaveBeenCalled()
+  })
+
+  it('passes correct HBase payload on submit', async () => {
+    const store = useDatasourceStore()
+    const createSpy = vi.spyOn(store, 'createSource').mockResolvedValue()
+
+    wrapper = await mountSourceDialog('hbase')
+
+    const vm = wrapper.vm as any
+    vm.formData.name = 'hbase-source'
+    vm.formData.hbaseSitePath = '/etc/hbase/conf/hbase-site.xml'
+    vm.formData.coreSitePath = '/etc/hadoop/conf/core-site.xml'
+
+    await wrapper.vm.$nextTick()
+
+    const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+    if (confirmBtn) await confirmBtn.trigger('click')
+
+    expect(createSpy).toHaveBeenCalledWith('hbase', {
+      name: 'hbase-source',
+      comments: '',
+      hbaseSitePath: '/etc/hbase/conf/hbase-site.xml',
+      coreSitePath: '/etc/hadoop/conf/core-site.xml',
+    })
+  })
+
+  it('passes correct Solr payload on submit', async () => {
+    const store = useDatasourceStore()
+    const createSpy = vi.spyOn(store, 'createSource').mockResolvedValue()
+
+    wrapper = await mountSourceDialog('solr')
+
+    const vm = wrapper.vm as any
+    vm.formData.name = 'solr-source'
+    vm.formData.zkHosts = 'zk1:2181,zk2:2181'
+    vm.formData.zkChroot = '/solr'
+
+    await wrapper.vm.$nextTick()
+
+    const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+    if (confirmBtn) await confirmBtn.trigger('click')
+
+    expect(createSpy).toHaveBeenCalledWith('solr', {
+      name: 'solr-source',
+      comments: '',
+      zkHosts: 'zk1:2181,zk2:2181',
+      zkChroot: '/solr',
+    })
+  })
+
+  it('passes correct SQL payload on submit', async () => {
+    const store = useDatasourceStore()
+    const createSpy = vi.spyOn(store, 'createSource').mockResolvedValue()
+
+    wrapper = await mountSourceDialog('sql')
+
+    const vm = wrapper.vm as any
+    vm.formData.name = 'sql-source'
+    vm.formData.dialect = 'MYSQL'
+    vm.formData.url = 'jdbc:mysql://localhost:3306/testdb'
+    vm.formData.username = 'admin'
+    vm.formData.password = 'secret'
+
+    await wrapper.vm.$nextTick()
+
+    const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+    if (confirmBtn) await confirmBtn.trigger('click')
+
+    expect(createSpy).toHaveBeenCalledWith('sql', {
+      name: 'sql-source',
+      comments: '',
+      dialect: 'MYSQL',
+      url: 'jdbc:mysql://localhost:3306/testdb',
+      username: 'admin',
+      password: 'secret',
+    })
+  })
+
+  it('resets form when show becomes true', async () => {
+    wrapper = mount(DataSourceFormDialog, {
+      props: { show: false, sourceType: 'sql' },
+    })
+
+    const vm = wrapper.vm as any
+    vm.formData.name = 'dirty'
+    vm.formData.dialect = 'ORACLE'
+    vm.formData.url = 'old-url'
+    vm.formData.username = 'old-user'
+    vm.formData.password = 'old-pass'
+
+    await wrapper.setProps({ show: true })
+    await wrapper.vm.$nextTick()
+
+    expect(vm.formData.name).toBe('')
+    expect(vm.formData.comments).toBe('')
+    expect(vm.formData.dialect).toBe('MYSQL')
+    expect(vm.formData.url).toBe('')
+    expect(vm.formData.username).toBe('')
+    expect(vm.formData.password).toBe('')
+  })
+
+  it('has validation rules on name field', async () => {
+    wrapper = mount(DataSourceFormDialog, {
+      props: { show: true, sourceType: 'hbase' },
+    })
+    const form = wrapper.findComponent({ name: 'NForm' })
+    const rules = form.props('rules') as Record<string, any>
+    expect(rules).toBeTruthy()
+    expect(rules.name).toBeTruthy()
+    expect(rules.name[0]?.required).toBe(true)
+    expect(rules.name[0]?.message).toBe('名称为必填项')
+  })
+
+  it('validates name is required on submit', async () => {
+    const store = useDatasourceStore()
+    const createSpy = vi.spyOn(store, 'createSource').mockResolvedValue()
+
+    // Mount with show transition so the watch fires and sets formData.name = ''
+    wrapper = await mountSourceDialog('hbase')
+
+    // formData.name is empty after reset — validation should prevent submission
+    const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+    if (confirmBtn) await confirmBtn.trigger('click')
+
+    expect(createSpy).not.toHaveBeenCalled()
+  })
+
+  it('does not show fields from other source types', () => {
+    wrapper = mount(DataSourceFormDialog, {
+      props: { show: true, sourceType: 'sql' },
+    })
+    expect(wrapper.text()).not.toContain('HBase 配置路径')
+    expect(wrapper.text()).not.toContain('Core 配置路径')
+    expect(wrapper.text()).not.toContain('ZooKeeper 地址')
+    expect(wrapper.text()).not.toContain('Chroot 路径')
   })
 })

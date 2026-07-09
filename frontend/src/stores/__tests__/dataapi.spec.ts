@@ -104,6 +104,26 @@ describe('useDataapiStore', () => {
       expect(store.error).toBe('Network error');
       expect(store.apis.hbase.loading).toBe(false);
     });
+
+    it('resets error to null before fetch', async () => {
+      mockListHbaseApis.mockResolvedValue(makePageResponse([]));
+
+      const store = useDataapiStore();
+      store.error = 'previous error';
+      await store.fetchApis('hbase');
+
+      expect(store.error).toBeNull();
+    });
+
+    it('uses default pageNum=1 and pageSize=10 when not specified', async () => {
+      const items = [{ id: 4, dataSourceId: 1, name: 'default-params-api', type: 1, tableName: 't', columns: 'c' }];
+      mockListHbaseApis.mockResolvedValue(makePageResponse(items));
+
+      const store = useDataapiStore();
+      await store.fetchApis('hbase');
+
+      expect(mockListHbaseApis).toHaveBeenCalledWith({ pageNum: 1, pageSize: 10 });
+    });
   });
 
   describe('registerApi', () => {
@@ -128,6 +148,42 @@ describe('useDataapiStore', () => {
 
       expect(store.error).toBe('Register failed');
     });
+
+    it('sets loading true during register and false after', async () => {
+      const newConf = { name: 'new-hbase-api', dataSourceId: 1, type: 1, tableName: 't', columns: 'c' };
+      mockRegisterHbaseApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseApis.mockImplementation(() => new Promise(resolve => {
+        setTimeout(() => resolve(makePageResponse([newConf])), 100);
+      }));
+
+      const store = useDataapiStore();
+      const registerPromise = store.registerApi('hbase', newConf as any);
+
+      await Promise.resolve();
+      expect(store.apis.hbase.loading).toBe(true);
+
+      await registerPromise;
+      expect(store.apis.hbase.loading).toBe(false);
+    });
+
+    it('resets error to null before register', async () => {
+      const newConf = { name: 'new-hbase-api', dataSourceId: 1, type: 1, tableName: 't', columns: 'c' };
+      mockRegisterHbaseApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseApis.mockResolvedValue(makePageResponse([newConf]));
+
+      const store = useDataapiStore();
+      store.error = 'old error';
+      await store.registerApi('hbase', newConf as any);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('does not re-throw on register failure', async () => {
+      mockRegisterSqlApi.mockRejectedValue(new Error('Register failed'));
+
+      const store = useDataapiStore();
+      await expect(store.registerApi('sql', { name: 'fail' } as any)).resolves.toBeUndefined();
+    });
   });
 
   describe('enableApi', () => {
@@ -143,6 +199,27 @@ describe('useDataapiStore', () => {
       expect(mockListSqlApis).toHaveBeenCalled();
       expect(store.apis.sql.list).toEqual(items);
     });
+
+    it('resets error to null before enable', async () => {
+      mockEnableHbaseApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseApis.mockResolvedValue(makePageResponse([]));
+
+      const store = useDataapiStore();
+      store.error = 'old error';
+      await store.enableApi('hbase', 1);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('sets loading false after enable completes', async () => {
+      mockEnableHbaseApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseApis.mockResolvedValue(makePageResponse([]));
+
+      const store = useDataapiStore();
+      await store.enableApi('hbase', 1);
+
+      expect(store.apis.hbase.loading).toBe(false);
+    });
   });
 
   describe('disableApi', () => {
@@ -157,6 +234,27 @@ describe('useDataapiStore', () => {
       expect(mockDisableSolrApi).toHaveBeenCalledWith(2);
       expect(mockListSolrApis).toHaveBeenCalled();
       expect(store.apis.solr.list).toEqual(items);
+    });
+
+    it('resets error to null before disable', async () => {
+      mockDisableSqlApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListSqlApis.mockResolvedValue(makePageResponse([]));
+
+      const store = useDataapiStore();
+      store.error = 'old error';
+      await store.disableApi('sql', 3);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('sets loading false after disable completes', async () => {
+      mockDisableSqlApi.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListSqlApis.mockResolvedValue(makePageResponse([]));
+
+      const store = useDataapiStore();
+      await store.disableApi('sql', 3);
+
+      expect(store.apis.sql.loading).toBe(false);
     });
   });
 });

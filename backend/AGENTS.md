@@ -67,8 +67,7 @@ com.wayne.apihub/
 - No `@Transactional` — `DataApiConfService.insertSqlApiConf()` does 2 writes without atomicity.
 - `SolrSourceController.initSource()` parameter typed as `HbaseSourceConf` (copy-paste error).
 - `application.yml` has hardcoded DB credentials.
-- 3 controllers use redundant `@ModelAttribute @RequestBody` combo.
-- No backend tests exist.
+- Backend tests exist (8 unit tests: 6 controller + 2 service; untracked in git). No integration/DAO/factory tests.
 
 ## WHERE TO ADD
 

@@ -1,7 +1,7 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-06-17
-**Commit:** ed0015b
+**Generated:** 2026-07-07
+**Commit:** 3f737f7
 **Branch:** master
 
 ## OVERVIEW
@@ -103,5 +103,5 @@ npm run format                                # Prettier
 - Vite dev proxy forwards `/v1/*` → `http://localhost:8080` (backend context path is `/api_hub` — verify proxy target if API calls fail).
 - `DataApiSqlMapper.xml` references `com.wayne.apihub.modules.common.entity.SqlParam` — this package does NOT exist. Actual class is at `modules.query.sql.SqlParam`. Fix before running.
 - `BaseSourceConf.subTypes` is missing `SqlSourceConf.class` (only declares HBase/Solr).
-- No Docker, no CI/CD, no backend tests exist.
+- No Docker, no CI/CD. Backend tests exist (8 unit tests: 6 controller + 2 service; untracked locally). No integration/DAO tests.
 - All dependency versions are cutting-edge (Spring Boot 4, Vue Router 5, Vite 8, TypeScript 6).

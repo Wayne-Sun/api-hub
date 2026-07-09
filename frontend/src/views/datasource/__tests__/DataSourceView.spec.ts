@@ -194,6 +194,21 @@ describe('DataSourceView.vue', () => {
     })
   })
 
+  it('renders title and 新增 button', () => {
+    wrapper = createWrapper()
+    expect(wrapper.text()).toContain('数据源管理')
+    expect(wrapper.text()).toContain('新增')
+  })
+
+  it('opens form dialog when 新增 button is clicked', async () => {
+    wrapper = createWrapper()
+    await wrapper.find('.n-button').trigger('click')
+
+    const dialog = wrapper.findComponent({ name: 'DataSourceFormDialog' })
+    expect(dialog.exists()).toBe(true)
+    expect(dialog.props('show')).toBe(true)
+  })
+
   describe('enable/disable toggle', () => {
     let snackbarSpy: ReturnType<typeof vi.spyOn>
     let enableHbaseMock: Mock
@@ -346,6 +361,78 @@ describe('DataSourceView.vue', () => {
       expect(vm.actionLoading).toBe(true)
       await promise
       expect(vm.actionLoading).toBe(false)
+    })
+  })
+
+  describe('tab switching', () => {
+    it('switches active tab when tab is clicked', async () => {
+      wrapper = createWrapper()
+      const setupState = (wrapper.vm as any).$.setupState
+
+      // Verify initial sourceType
+      expect(setupState.activeTab).toBe('hbase')
+      expect(wrapper.findComponent({ name: 'DataSourceFormDialog' }).props('sourceType')).toBe('hbase')
+
+      // Mutate the internal ref to simulate tab switch
+      setupState.activeTab = 'solr'
+      await wrapper.vm.$nextTick()
+
+      // The DataSourceFormDialog's sourceType prop should follow activeTab
+      expect(wrapper.findComponent({ name: 'DataSourceFormDialog' }).props('sourceType')).toBe('solr')
+    })
+  })
+
+  describe('pagination', () => {
+    it('calls fetchSources with new page when pagination changes', async () => {
+      // Set total > 0 so n-pagination is rendered
+      store.sources = {
+        hbase: { list: [sampleHbaseItem], total: 25, loading: false },
+        solr: { list: [], total: 0, loading: false },
+        sql: { list: [], total: 0, loading: false },
+      }
+      const fetchSpy = vi.spyOn(store, 'fetchSources').mockResolvedValue()
+      wrapper = createWrapper()
+      fetchSpy.mockClear()
+
+      const setupState = (wrapper.vm as any).$.setupState
+      setupState.page = 2
+      await wrapper.vm.$nextTick()
+
+      // The watch([activeTab, page]) should trigger fetchSources with the new page
+      expect(fetchSpy).toHaveBeenCalledWith('hbase', 2)
+    })
+  })
+
+  describe('form dialog', () => {
+    it('opens DataSourceFormDialog when 新增 button is clicked', async () => {
+      wrapper = createWrapper()
+      const dialog = wrapper.findComponent({ name: 'DataSourceFormDialog' })
+      expect(dialog.props('show')).toBe(false)
+
+      await wrapper.find('.n-button').trigger('click')
+
+      expect(dialog.props('show')).toBe(true)
+    })
+
+    it('closes form dialog when close event is emitted', async () => {
+      wrapper = createWrapper()
+      // Open dialog first
+      await wrapper.find('.n-button').trigger('click')
+      let dialog = wrapper.findComponent({ name: 'DataSourceFormDialog' })
+      expect(dialog.props('show')).toBe(true)
+
+      // Emit close event — triggers @close="showCreateDialog = false"
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      dialog = wrapper.findComponent({ name: 'DataSourceFormDialog' })
+      expect(dialog.props('show')).toBe(false)
+    })
+
+    it('passes activeTab as sourceType to DataSourceFormDialog', () => {
+      wrapper = createWrapper()
+      const dialog = wrapper.findComponent({ name: 'DataSourceFormDialog' })
+      expect(dialog.props('sourceType')).toBe('hbase')
     })
   })
 })

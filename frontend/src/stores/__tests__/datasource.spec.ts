@@ -105,6 +105,26 @@ describe('useDatasourceStore', () => {
       expect(store.error).toBe('Network error');
       expect(store.sources.hbase.loading).toBe(false);
     });
+
+    it('resets error to null before fetch', async () => {
+      mockListHbaseSources.mockResolvedValue(makePageResponse([]));
+
+      const store = useDatasourceStore();
+      store.error = 'previous error';
+      await store.fetchSources('hbase');
+
+      expect(store.error).toBeNull();
+    });
+
+    it('uses default pageNum=1 and pageSize=10', async () => {
+      const items = [{ id: 4, name: 'default-src', hbaseSitePath: '/a', coreSitePath: '/b' }];
+      mockListHbaseSources.mockResolvedValue(makePageResponse(items));
+
+      const store = useDatasourceStore();
+      await store.fetchSources('hbase');
+
+      expect(mockListHbaseSources).toHaveBeenCalledWith({ pageNum: 1, pageSize: 10 });
+    });
   });
 
   describe('createSource', () => {
@@ -129,6 +149,42 @@ describe('useDatasourceStore', () => {
 
       expect(store.error).toBe('Insert failed');
     });
+
+    it('sets loading true during create and false after', async () => {
+      const newConf = { name: 'new-hbase', hbaseSitePath: '/a', coreSitePath: '/b' };
+      mockInsertHbaseSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseSources.mockImplementation(() => new Promise(resolve => {
+        setTimeout(() => resolve(makePageResponse([newConf])), 100);
+      }));
+
+      const store = useDatasourceStore();
+      const createPromise = store.createSource('hbase', newConf as any);
+
+      await Promise.resolve();
+      expect(store.sources.hbase.loading).toBe(true);
+
+      await createPromise;
+      expect(store.sources.hbase.loading).toBe(false);
+    });
+
+    it('resets error to null before create', async () => {
+      const newConf = { name: 'new-hbase', hbaseSitePath: '/a', coreSitePath: '/b' };
+      mockInsertHbaseSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseSources.mockResolvedValue(makePageResponse([newConf]));
+
+      const store = useDatasourceStore();
+      store.error = 'old error';
+      await store.createSource('hbase', newConf as any);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('does not re-throw on insert failure', async () => {
+      mockInsertHbaseSource.mockRejectedValue(new Error('Insert failed'));
+
+      const store = useDatasourceStore();
+      await expect(store.createSource('hbase', { name: 'fail' } as any)).resolves.toBeUndefined();
+    });
   });
 
   describe('enableSource', () => {
@@ -144,6 +200,27 @@ describe('useDatasourceStore', () => {
       expect(mockListHbaseSources).toHaveBeenCalled();
       expect(store.sources.hbase.list).toEqual(items);
     });
+
+    it('resets error to null before enable', async () => {
+      mockEnableHbaseSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseSources.mockResolvedValue(makePageResponse([]));
+
+      const store = useDatasourceStore();
+      store.error = 'old error';
+      await store.enableSource('hbase', 1);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('sets loading false after enable completes', async () => {
+      mockEnableHbaseSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListHbaseSources.mockResolvedValue(makePageResponse([]));
+
+      const store = useDatasourceStore();
+      await store.enableSource('hbase', 1);
+
+      expect(store.sources.hbase.loading).toBe(false);
+    });
   });
 
   describe('disableSource', () => {
@@ -158,6 +235,27 @@ describe('useDatasourceStore', () => {
       expect(mockDisableSolrSource).toHaveBeenCalledWith(2);
       expect(mockListSolrSources).toHaveBeenCalled();
       expect(store.sources.solr.list).toEqual(items);
+    });
+
+    it('resets error to null before disable', async () => {
+      mockDisableSqlSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListSqlSources.mockResolvedValue(makePageResponse([]));
+
+      const store = useDatasourceStore();
+      store.error = 'old error';
+      await store.disableSource('sql', 3);
+
+      expect(store.error).toBeNull();
+    });
+
+    it('sets loading false after disable completes', async () => {
+      mockDisableSqlSource.mockResolvedValue({ data: { code: 200, message: 'success', data: null } });
+      mockListSqlSources.mockResolvedValue(makePageResponse([]));
+
+      const store = useDatasourceStore();
+      await store.disableSource('sql', 3);
+
+      expect(store.sources.sql.loading).toBe(false);
     });
   });
 });

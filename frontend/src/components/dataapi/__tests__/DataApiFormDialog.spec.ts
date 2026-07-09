@@ -185,6 +185,36 @@ describe('DataApiFormDialog.vue', () => {
         ],
       })
     })
+
+    it('calls store.registerApi with correct Solr payload on submit', async () => {
+      const store = useDataapiStore()
+      const registerSpy = vi.spyOn(store, 'registerApi')
+
+      wrapper = await mountDialog('solr')
+
+      const vm = wrapper.vm as any
+      vm.formData.name = 'solr-api'
+      vm.formData.dataSourceId = '3'
+      vm.formData.collection = 'my_collection'
+      vm.formData.fields = 'field1,field2'
+      vm.formData.conditions = 'field1:value1'
+      vm.formData.orders = 'field1 asc'
+
+      await wrapper.vm.$nextTick()
+
+      const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+      if (confirmBtn) await confirmBtn.trigger('click')
+
+      expect(registerSpy).toHaveBeenCalledWith('solr', {
+        name: 'solr-api',
+        comments: '',
+        dataSourceId: 3,
+        collection: 'my_collection',
+        fields: 'field1,field2',
+        conditions: 'field1:value1',
+        orders: 'field1 asc',
+      })
+    })
   })
 
   describe('SQL paramList operations', () => {
@@ -273,6 +303,19 @@ describe('DataApiFormDialog.vue', () => {
       expect(vm.formData.paramList).toEqual([])
       expect(vm.formData.pageTag).toBe(0)
     })
+
+    it('closes dialog on confirm after successful submit', async () => {
+      wrapper = await mountDialog('hbase')
+
+      const confirmBtn = wrapper.findAll('button').find(b => b.text().includes('确认'))
+      if (confirmBtn) await confirmBtn.trigger('click')
+
+      // Drain all microtasks so the full async chain (onSubmit → validate →
+      // registerApi → API call → fetchApis → emit('close')) completes
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(wrapper.emitted('close')).toBeTruthy()
+    })
   })
 
   describe('required field validation', () => {
@@ -294,6 +337,46 @@ describe('DataApiFormDialog.vue', () => {
       expect(rules.dataSourceId).toBeTruthy()
       expect(rules.dataSourceId[0]?.required).toBe(true)
       expect(rules.dataSourceId[0]?.message).toBe('数据源 ID 为必填项')
+    })
+
+    it('has validation rules on sql field for sql type', async () => {
+      wrapper = await mountDialog('sql')
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.sql).toBeTruthy()
+      expect(rules.sql[0]?.required).toBe(true)
+      expect(rules.sql[0]?.message).toBe('SQL 为必填项')
+    })
+
+    it('has validation rules on tableName field for hbase type', async () => {
+      wrapper = await mountDialog('hbase')
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.tableName).toBeTruthy()
+      expect(rules.tableName[0]?.required).toBe(true)
+      expect(rules.tableName[0]?.message).toBe('表名为必填项')
+    })
+
+    it('has validation rules on collection field for solr type', async () => {
+      wrapper = await mountDialog('solr')
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.collection).toBeTruthy()
+      expect(rules.collection[0]?.required).toBe(true)
+      expect(rules.collection[0]?.message).toBe('Collection 为必填项')
+    })
+
+    it('has validation rules on fields field for solr type', async () => {
+      wrapper = await mountDialog('solr')
+      const form = wrapper.findComponent({ name: 'NForm' })
+      const rules = form.props('rules') as Record<string, any>
+      expect(rules).toBeTruthy()
+      expect(rules.fields).toBeTruthy()
+      expect(rules.fields[0]?.required).toBe(true)
+      expect(rules.fields[0]?.message).toBe('字段为必填项')
     })
   })
 })
