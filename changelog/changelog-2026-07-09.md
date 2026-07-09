@@ -89,6 +89,17 @@
 | 后端测试（新增未跟踪） | 8 | 6 controller + 2 service |
 | **总计** | **17** | **修改 9 + 新增未跟踪 8** |
 
+---
+
+### 换行符规范化
+
+#### .gitattributes（新建）
+- 根目录新增 `.gitattributes`，写入 `* text=auto` 声明
+- 所有文本文件存储时统一为 **LF**，Windows 检出时自动转为 **CRLF**
+- 消除了 65+ 后端 Java/XML/YAML 文件的 LF→CRLF 换行符噪声（`core.autocrlf` 与工作目录不一致导致）
+- frontend/.gitattributes 已有 `* text=auto eol=lf`（更严格），不受影响
+- 内容零变更，仅 Git attribute 元数据对齐
+
 ## 已知遗留问题
 - 数据库密码 `api_hub@2021` 仍硬编码在 `application.yml` 中
 - `enableApi`/`disableApi` 使用 GET 方式修改状态（应为 POST/PUT）
